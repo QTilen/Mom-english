@@ -1,0 +1,1964 @@
+{
+ "exercises": [
+  {
+   "skill": "vocabulary",
+   "level": 0,
+   "exercise": {
+    "type": "mc",
+    "topic": "food",
+    "categories": [
+     "vocab:food"
+    ],
+    "prompt_sl": "Kako se reče »kruh« po angleško?",
+    "question": "kruh",
+    "options": [
+     "bread",
+     "butter",
+     "milk",
+     "rice"
+    ],
+    "answer": 0,
+    "explanation_sl": "Kruh = bread.",
+    "words": [
+     {
+      "en": "bread",
+      "sl": "kruh"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 0,
+   "exercise": {
+    "type": "mc",
+    "topic": "time",
+    "categories": [
+     "vocab:time"
+    ],
+    "prompt_sl": "Katero število je »deset«?",
+    "question": "deset (10)",
+    "options": [
+     "two",
+     "ten",
+     "twelve",
+     "seven"
+    ],
+    "answer": 1,
+    "explanation_sl": "10 = ten.",
+    "words": [
+     {
+      "en": "ten",
+      "sl": "deset (10)"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 0,
+   "exercise": {
+    "type": "match",
+    "topic": "home",
+    "categories": [
+     "vocab:general"
+    ],
+    "pairs": [
+     {
+      "sl": "rdeča",
+      "en": "red"
+     },
+     {
+      "sl": "modra",
+      "en": "blue"
+     },
+     {
+      "sl": "zelena",
+      "en": "green"
+     },
+     {
+      "sl": "bela",
+      "en": "white"
+     }
+    ],
+    "explanation_sl": "Barve: red, blue, green, white.",
+    "words": [
+     {
+      "en": "red",
+      "sl": "rdeča"
+     },
+     {
+      "en": "blue",
+      "sl": "modra"
+     },
+     {
+      "en": "green",
+      "sl": "zelena"
+     },
+     {
+      "en": "white",
+      "sl": "bela"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 0,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "vocab:family"
+    ],
+    "sl": "brat",
+    "accepted": [
+     "brother"
+    ],
+    "explanation_sl": "Brat = brother, sestra = sister.",
+    "words": [
+     {
+      "en": "brother",
+      "sl": "brat"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 0,
+   "exercise": {
+    "type": "mc",
+    "topic": "family",
+    "categories": [
+     "grammar:to_be"
+    ],
+    "question": "You ___ my friend.",
+    "options": [
+     "are",
+     "am",
+     "is"
+    ],
+    "answer": 0,
+    "explanation_sl": "Z »you« uporabimo »are«: you are."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 0,
+   "exercise": {
+    "type": "fill",
+    "topic": "home",
+    "categories": [
+     "grammar:plurals"
+    ],
+    "sentence": "I have two ___.",
+    "accepted": [
+     "cats"
+    ],
+    "explanation_sl": "Množina: cat → cats (dodamo -s).",
+    "options": [
+     "cat",
+     "cats",
+     "cates"
+    ],
+    "hint_sl": "cat – množina"
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 0,
+   "exercise": {
+    "type": "mc",
+    "topic": "family",
+    "categories": [
+     "grammar:pronouns"
+    ],
+    "question": "___ am from Slovenia.",
+    "options": [
+     "I",
+     "My",
+     "Me"
+    ],
+    "answer": 0,
+    "explanation_sl": "»Jaz sem« = I am."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 0,
+   "exercise": {
+    "type": "order",
+    "topic": "family",
+    "categories": [
+     "grammar:to_be",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "My",
+     "name",
+     "is",
+     "Marija."
+    ],
+    "sl": "Ime mi je Marija.",
+    "explanation_sl": "Po angleško rečemo: My name is … (moje ime je …)."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 0,
+   "exercise": {
+    "type": "reading",
+    "topic": "town",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Open today: 8:00 – 20:00",
+    "questions": [
+     {
+      "question": "Do kdaj je lekarna danes odprta?",
+      "options": [
+       "do 20:00",
+       "do 8:00",
+       "do 12:00"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»Open« = odprto; lekarna je odprta od 8:00 do 20:00.",
+    "title": "PHARMACY"
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 0,
+   "exercise": {
+    "type": "reading",
+    "topic": "home",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "I am Vesna. I am from Celje. I have a cat.",
+    "questions": [
+     {
+      "question": "Od kod je Vesna?",
+      "options": [
+       "iz Celja",
+       "iz Ljubljane",
+       "iz Maribora"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»I am from Celje« = sem iz Celja."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 0,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:possessives"
+    ],
+    "sl": "Ime mi je Ana.",
+    "accepted": [
+     "My name is Ana.",
+     "I am Ana.",
+     "I'm Ana."
+    ],
+    "explanation_sl": "Po angleško: My name is Ana."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 0,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:to_be"
+    ],
+    "sl": "Sem iz Slovenije.",
+    "accepted": [
+     "I am from Slovenia.",
+     "I'm from Slovenia."
+    ],
+    "explanation_sl": "»Sem iz …« = I am from … (I'm from …)."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 0,
+   "exercise": {
+    "type": "translate",
+    "topic": "home",
+    "categories": [
+     "grammar:possessives"
+    ],
+    "sl": "To je moja hiša.",
+    "accepted": [
+     "This is my house.",
+     "This is my home.",
+     "That is my house.",
+     "That's my house."
+    ],
+    "explanation_sl": "»To je« = this is, »moja« = my."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 0,
+   "exercise": {
+    "type": "write",
+    "topic": "home",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Napiši, kako ti je ime in kje živiš (dve povedi).",
+    "hint_sl": "Na primer: My name is … I live in …",
+    "min_words": 4,
+    "max_words": 30,
+    "explanation_sl": "Kratko besedilo."
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 1,
+   "exercise": {
+    "type": "mc",
+    "topic": "shopping",
+    "categories": [
+     "vocab:shopping"
+    ],
+    "prompt_sl": "Kako se reče »denar« po angleško?",
+    "question": "denar",
+    "options": [
+     "money",
+     "price",
+     "bag",
+     "shop"
+    ],
+    "answer": 0,
+    "explanation_sl": "Denar = money. Price = cena.",
+    "words": [
+     {
+      "en": "money",
+      "sl": "denar"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 1,
+   "exercise": {
+    "type": "mc",
+    "topic": "weather",
+    "categories": [
+     "vocab:weather"
+    ],
+    "prompt_sl": "Kako se reče »mrzlo« po angleško?",
+    "question": "mrzlo",
+    "options": [
+     "hot",
+     "cold",
+     "warm",
+     "wet"
+    ],
+    "answer": 1,
+    "explanation_sl": "Mrzlo = cold. Toplo = warm, vroče = hot.",
+    "words": [
+     {
+      "en": "cold",
+      "sl": "mrzlo"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 1,
+   "exercise": {
+    "type": "match",
+    "topic": "home",
+    "categories": [
+     "vocab:home"
+    ],
+    "pairs": [
+     {
+      "sl": "miza",
+      "en": "table"
+     },
+     {
+      "sl": "stol",
+      "en": "chair"
+     },
+     {
+      "sl": "okno",
+      "en": "window"
+     },
+     {
+      "sl": "vrata",
+      "en": "door"
+     }
+    ],
+    "explanation_sl": "Stvari v hiši.",
+    "words": [
+     {
+      "en": "table",
+      "sl": "miza"
+     },
+     {
+      "en": "chair",
+      "sl": "stol"
+     },
+     {
+      "en": "window",
+      "sl": "okno"
+     },
+     {
+      "en": "door",
+      "sl": "vrata"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 1,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "vocab:food"
+    ],
+    "sl": "jabolko",
+    "accepted": [
+     "apple"
+    ],
+    "explanation_sl": "Jabolko = apple (an apple).",
+    "words": [
+     {
+      "en": "apple",
+      "sl": "jabolko"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 1,
+   "exercise": {
+    "type": "mc",
+    "topic": "work",
+    "categories": [
+     "grammar:articles"
+    ],
+    "question": "She is ___ nurse.",
+    "options": [
+     "a",
+     "an"
+    ],
+    "answer": 0,
+    "explanation_sl": "Pred soglasnikom uporabimo »a«: a nurse. Pri poklicih vedno dodamo a/an."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 1,
+   "exercise": {
+    "type": "fill",
+    "topic": "home",
+    "categories": [
+     "grammar:to_be"
+    ],
+    "sentence": "We ___ at home.",
+    "accepted": [
+     "are"
+    ],
+    "explanation_sl": "Z »we« uporabimo »are«: we are.",
+    "options": [
+     "am",
+     "is",
+     "are"
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 1,
+   "exercise": {
+    "type": "mc",
+    "topic": "family",
+    "categories": [
+     "grammar:pronouns"
+    ],
+    "question": "Ana and I are sisters. ___ live in Kranj.",
+    "options": [
+     "We",
+     "They",
+     "She"
+    ],
+    "answer": 0,
+    "explanation_sl": "»Ana in jaz« = midve → we."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 1,
+   "exercise": {
+    "type": "order",
+    "topic": "family",
+    "categories": [
+     "grammar:to_be",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "Is",
+     "your",
+     "son",
+     "a",
+     "doctor?"
+    ],
+    "sl": "Ali je tvoj sin zdravnik?",
+    "explanation_sl": "V vprašanju gre »is« na začetek: Is your son …?"
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 1,
+   "exercise": {
+    "type": "reading",
+    "topic": "shopping",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "milk\neggs\nbread\ntwo apples\ncheese",
+    "questions": [
+     {
+      "question": "Koliko jabolk je na seznamu?",
+      "options": [
+       "dve",
+       "eno",
+       "tri"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»Two apples« = dve jabolki.",
+    "title": "Shopping list"
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 1,
+   "exercise": {
+    "type": "reading",
+    "topic": "work",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Hello, I am Ivan. I am a driver. My wife is a teacher. We have one daughter.",
+    "questions": [
+     {
+      "question": "Kaj je Ivanova žena po poklicu?",
+      "options": [
+       "učiteljica",
+       "voznica",
+       "zdravnica"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»My wife is a teacher« = moja žena je učiteljica."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 1,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:to_be"
+    ],
+    "sl": "Moj mož je doma.",
+    "accepted": [
+     "My husband is at home.",
+     "My husband is home.",
+     "My husband's at home."
+    ],
+    "explanation_sl": "»Je doma« = is at home."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 1,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:have_got",
+     "grammar:plurals"
+    ],
+    "sl": "Imam dva otroka.",
+    "accepted": [
+     "I have two children.",
+     "I have got two children.",
+     "I've got two children.",
+     "I have two kids."
+    ],
+    "explanation_sl": "»Otrok« = child, množina je nepravilna: children."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 1,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "grammar:articles"
+    ],
+    "sl": "To je dobra kava.",
+    "accepted": [
+     "This is good coffee.",
+     "This is a good coffee.",
+     "It is good coffee.",
+     "It's good coffee.",
+     "This coffee is good.",
+     "That is good coffee."
+    ],
+    "explanation_sl": "Pridevnik stoji pred samostalnikom: good coffee."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 1,
+   "exercise": {
+    "type": "write",
+    "topic": "home",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Napiši dve ali tri povedi o svoji kuhinji ali dnevni sobi.",
+    "hint_sl": "Na primer: My kitchen is big. It is …",
+    "min_words": 6,
+    "max_words": 40,
+    "explanation_sl": "Kratko besedilo."
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 2,
+   "exercise": {
+    "type": "mc",
+    "topic": "doctor",
+    "categories": [
+     "vocab:doctor"
+    ],
+    "prompt_sl": "Kako se reče »bolan« po angleško?",
+    "question": "bolan",
+    "options": [
+     "ill",
+     "tired",
+     "happy",
+     "hungry"
+    ],
+    "answer": 0,
+    "explanation_sl": "Bolan = ill (ali sick). Tired = utrujen.",
+    "words": [
+     {
+      "en": "ill",
+      "sl": "bolan"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 2,
+   "exercise": {
+    "type": "mc",
+    "topic": "travel",
+    "categories": [
+     "vocab:travel"
+    ],
+    "prompt_sl": "Kako se reče »letališče« po angleško?",
+    "question": "letališče",
+    "options": [
+     "airport",
+     "station",
+     "harbour",
+     "bus stop"
+    ],
+    "answer": 0,
+    "explanation_sl": "Letališče = airport. Station = postaja.",
+    "words": [
+     {
+      "en": "airport",
+      "sl": "letališče"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 2,
+   "exercise": {
+    "type": "match",
+    "topic": "food",
+    "categories": [
+     "vocab:food"
+    ],
+    "pairs": [
+     {
+      "sl": "krompir",
+      "en": "potato"
+     },
+     {
+      "sl": "čebula",
+      "en": "onion"
+     },
+     {
+      "sl": "korenje",
+      "en": "carrot"
+     },
+     {
+      "sl": "paradižnik",
+      "en": "tomato"
+     }
+    ],
+    "explanation_sl": "Zelenjava.",
+    "words": [
+     {
+      "en": "potato",
+      "sl": "krompir"
+     },
+     {
+      "en": "onion",
+      "sl": "čebula"
+     },
+     {
+      "en": "carrot",
+      "sl": "korenje"
+     },
+     {
+      "en": "tomato",
+      "sl": "paradižnik"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 2,
+   "exercise": {
+    "type": "translate",
+    "topic": "shopping",
+    "categories": [
+     "vocab:shopping"
+    ],
+    "sl": "cena",
+    "accepted": [
+     "price"
+    ],
+    "explanation_sl": "Cena = price. How much is it? = Koliko stane?",
+    "words": [
+     {
+      "en": "price",
+      "sl": "cena"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 2,
+   "exercise": {
+    "type": "mc",
+    "topic": "free_time",
+    "categories": [
+     "grammar:present_simple"
+    ],
+    "question": "They ___ TV in the evening.",
+    "options": [
+     "watch",
+     "watches",
+     "watching"
+    ],
+    "answer": 0,
+    "explanation_sl": "Z »they« glagol ostane brez končnice: they watch."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 2,
+   "exercise": {
+    "type": "fill",
+    "topic": "home",
+    "categories": [
+     "grammar:there_is_are"
+    ],
+    "sentence": "___ two chairs in the kitchen.",
+    "accepted": [
+     "There are"
+    ],
+    "explanation_sl": "Za več stvari uporabimo »there are«.",
+    "options": [
+     "There is",
+     "There are",
+     "It is"
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 2,
+   "exercise": {
+    "type": "mc",
+    "topic": "home",
+    "categories": [
+     "grammar:prepositions"
+    ],
+    "question": "The keys are ___ the table.",
+    "options": [
+     "on",
+     "at",
+     "of"
+    ],
+    "answer": 0,
+    "explanation_sl": "»Na mizi« = on the table."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 2,
+   "exercise": {
+    "type": "order",
+    "topic": "food",
+    "categories": [
+     "grammar:present_simple",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "We",
+     "have",
+     "lunch",
+     "at",
+     "one",
+     "o'clock."
+    ],
+    "sl": "Kosilo imamo ob enih.",
+    "explanation_sl": "Vrstni red: kdo (we) + glagol (have) + kaj (lunch) + kdaj (at one o'clock)."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 2,
+   "exercise": {
+    "type": "reading",
+    "topic": "doctor",
+    "categories": [
+     "reading:main_idea"
+    ],
+    "text": "Hi Tina, I am at the doctor's. I have a bad cold. Please buy some lemons and honey for me. Thanks! Mum",
+    "questions": [
+     {
+      "question": "What does Mum want?",
+      "options": [
+       "lemons and honey",
+       "a new phone",
+       "some bread"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»Please buy some lemons and honey« = prosim, kupi limone in med."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 2,
+   "exercise": {
+    "type": "reading",
+    "topic": "home",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Our neighbours have a big garden. There are apple trees and lots of flowers. On Sundays they sit in the garden and drink coffee.",
+    "questions": [
+     {
+      "question": "What do the neighbours do on Sundays?",
+      "options": [
+       "They drink coffee in the garden.",
+       "They buy flowers.",
+       "They cut the apple trees."
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»On Sundays they sit in the garden and drink coffee.«"
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 2,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "grammar:present_simple"
+    ],
+    "sl": "Vsak dan pijem čaj.",
+    "accepted": [
+     "I drink tea every day.",
+     "Every day I drink tea.",
+     "I have tea every day.",
+     "Every day I have tea."
+    ],
+    "explanation_sl": "Sedanjik za navade: I drink tea every day."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 2,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "grammar:there_is_are"
+    ],
+    "sl": "V hladilniku je mleko.",
+    "accepted": [
+     "There is milk in the fridge.",
+     "There's milk in the fridge.",
+     "There is some milk in the fridge.",
+     "There's some milk in the fridge."
+    ],
+    "explanation_sl": "»Je / obstaja« = there is."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 2,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:possessives",
+     "grammar:present_simple_3sg"
+    ],
+    "sl": "Njen sin živi v Londonu.",
+    "accepted": [
+     "Her son lives in London."
+    ],
+    "explanation_sl": "»Njen« = her; pri he/she glagol dobi -s: lives."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 2,
+   "exercise": {
+    "type": "write",
+    "topic": "family",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Opiši svojo družino: kdo so in kje živijo (3–4 povedi).",
+    "hint_sl": "Na primer: My daughter lives in … My son has …",
+    "min_words": 12,
+    "max_words": 60,
+    "explanation_sl": "Kratko besedilo."
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 3,
+   "exercise": {
+    "type": "mc",
+    "topic": "town",
+    "categories": [
+     "vocab:town"
+    ],
+    "prompt_sl": "Kako se reče »pošta« po angleško?",
+    "question": "pošta",
+    "options": [
+     "post office",
+     "police station",
+     "library",
+     "bank"
+    ],
+    "answer": 0,
+    "explanation_sl": "Pošta = post office.",
+    "words": [
+     {
+      "en": "post office",
+      "sl": "pošta"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 3,
+   "exercise": {
+    "type": "mc",
+    "topic": "doctor",
+    "categories": [
+     "vocab:doctor"
+    ],
+    "prompt_sl": "Kako po angleško poveš »Kašljam.«?",
+    "question": "Kašljam.",
+    "options": [
+     "I have a cough.",
+     "I have a cold.",
+     "I have a sore throat.",
+     "I have a temperature."
+    ],
+    "answer": 0,
+    "explanation_sl": "Kašelj = cough. Sore throat = vneto grlo, temperature = vročina.",
+    "words": [
+     {
+      "en": "cough",
+      "sl": "Kašljam."
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 3,
+   "exercise": {
+    "type": "match",
+    "topic": "travel",
+    "categories": [
+     "vocab:travel"
+    ],
+    "pairs": [
+     {
+      "sl": "kovček",
+      "en": "suitcase"
+     },
+     {
+      "sl": "potni list",
+      "en": "passport"
+     },
+     {
+      "sl": "vlak",
+      "en": "train"
+     },
+     {
+      "sl": "postaja",
+      "en": "station"
+     }
+    ],
+    "explanation_sl": "Besede za potovanje.",
+    "words": [
+     {
+      "en": "suitcase",
+      "sl": "kovček"
+     },
+     {
+      "en": "passport",
+      "sl": "potni list"
+     },
+     {
+      "en": "train",
+      "sl": "vlak"
+     },
+     {
+      "en": "station",
+      "sl": "postaja"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 3,
+   "exercise": {
+    "type": "translate",
+    "topic": "cooking",
+    "categories": [
+     "vocab:cooking"
+    ],
+    "sl": "skleda",
+    "accepted": [
+     "bowl"
+    ],
+    "explanation_sl": "Skleda = bowl. Krožnik = plate.",
+    "words": [
+     {
+      "en": "bowl",
+      "sl": "skleda"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 3,
+   "exercise": {
+    "type": "mc",
+    "topic": "work",
+    "categories": [
+     "grammar:present_simple_3sg"
+    ],
+    "question": "My daughter ___ in a bank.",
+    "options": [
+     "work",
+     "works",
+     "working"
+    ],
+    "answer": 1,
+    "explanation_sl": "Pri he / she / it dodamo glagolu -s: she works."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 3,
+   "exercise": {
+    "type": "fill",
+    "topic": "cooking",
+    "categories": [
+     "grammar:questions_negatives"
+    ],
+    "sentence": "___ your husband like cooking?",
+    "accepted": [
+     "Does"
+    ],
+    "explanation_sl": "Vprašanje pri he / she / it začnemo z »Does«.",
+    "hint_sl": "do ali does?"
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 3,
+   "exercise": {
+    "type": "mc",
+    "topic": "work",
+    "categories": [
+     "grammar:adverbs_frequency"
+    ],
+    "question": "She is ___ late – she is always on time.",
+    "options": [
+     "never",
+     "often",
+     "usually"
+    ],
+    "answer": 0,
+    "explanation_sl": "»Nikoli« = never. Če je vedno točna, ni nikoli pozna."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 3,
+   "exercise": {
+    "type": "order",
+    "topic": "family",
+    "categories": [
+     "grammar:questions_negatives",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "Where",
+     "does",
+     "your",
+     "sister",
+     "live?"
+    ],
+    "sl": "Kje živi tvoja sestra?",
+    "explanation_sl": "Vprašanje: Where + does + oseba + glagol brez -s."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 3,
+   "exercise": {
+    "type": "reading",
+    "topic": "travel",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Dear Ana, I'm on holiday in Piran with my husband. The hotel is small but very nice, and our room has a view of the sea. We walk by the sea every morning and eat fish every evening. See you soon! Marta",
+    "questions": [
+     {
+      "question": "What do Marta and her husband do every morning?",
+      "options": [
+       "They walk by the sea.",
+       "They eat fish.",
+       "They swim in the pool."
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»We walk by the sea every morning« = vsako jutro se sprehajata ob morju."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 3,
+   "exercise": {
+    "type": "reading",
+    "topic": "travel",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Bus 6 goes to the hospital. It leaves every twenty minutes from Monday to Friday. On Saturdays and Sundays it leaves every hour.",
+    "questions": [
+     {
+      "question": "How often does the bus leave on Sunday?",
+      "options": [
+       "every hour",
+       "every twenty minutes",
+       "It doesn't go on Sunday."
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»On Saturdays and Sundays it leaves every hour« = ob vikendih vsako uro."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 3,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "grammar:questions_negatives",
+     "grammar:present_simple_3sg"
+    ],
+    "sl": "Moja hči ne pije kave.",
+    "accepted": [
+     "My daughter doesn't drink coffee.",
+     "My daughter does not drink coffee."
+    ],
+    "explanation_sl": "Zanikanje pri he/she: doesn't + glagol brez -s."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 3,
+   "exercise": {
+    "type": "translate",
+    "topic": "shopping",
+    "categories": [
+     "grammar:prepositions"
+    ],
+    "sl": "Ob sobotah gremo na tržnico.",
+    "accepted": [
+     "On Saturdays we go to the market.",
+     "We go to the market on Saturdays.",
+     "On Saturday we go to the market.",
+     "We go to the market on Saturday."
+    ],
+    "explanation_sl": "Pri dnevih uporabimo »on«: on Saturdays."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 3,
+   "exercise": {
+    "type": "translate",
+    "topic": "free_time",
+    "categories": [
+     "grammar:can"
+    ],
+    "sl": "Ali znaš plavati?",
+    "accepted": [
+     "Can you swim?"
+    ],
+    "explanation_sl": "»Znati / moči« = can. Vprašanje: Can you …?"
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 3,
+   "exercise": {
+    "type": "write",
+    "topic": "home",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Napiši kratko sporočilo sosedi: prosi jo, da ti zalije rože, ker te ne bo doma (3–4 povedi).",
+    "hint_sl": "Na primer: Hi …, I am not at home on … Can you …?",
+    "min_words": 15,
+    "max_words": 70,
+    "explanation_sl": "Kratko besedilo."
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 4,
+   "exercise": {
+    "type": "mc",
+    "topic": "shopping",
+    "categories": [
+     "vocab:shopping"
+    ],
+    "prompt_sl": "Kako v trgovini z oblačili vprašaš »Ali lahko to pomerim?«",
+    "question": "Ali lahko to pomerim?",
+    "options": [
+     "Can I try this on?",
+     "Can I pay by card?",
+     "How much is this?",
+     "Do you have a bag?"
+    ],
+    "answer": 0,
+    "explanation_sl": "Pomeriti = try on.",
+    "words": [
+     {
+      "en": "try on",
+      "sl": "Ali lahko to pomerim?"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 4,
+   "exercise": {
+    "type": "mc",
+    "topic": "weather",
+    "categories": [
+     "vocab:weather"
+    ],
+    "prompt_sl": "Kako se reče »megla« po angleško?",
+    "question": "megla",
+    "options": [
+     "fog",
+     "frost",
+     "thunder",
+     "wind"
+    ],
+    "answer": 0,
+    "explanation_sl": "Megla = fog. Frost = slana, thunder = grom.",
+    "words": [
+     {
+      "en": "fog",
+      "sl": "megla"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 4,
+   "exercise": {
+    "type": "match",
+    "topic": "doctor",
+    "categories": [
+     "vocab:doctor"
+    ],
+    "pairs": [
+     {
+      "sl": "lekarnar",
+      "en": "pharmacist"
+     },
+     {
+      "sl": "tableta",
+      "en": "tablet"
+     },
+     {
+      "sl": "injekcija",
+      "en": "injection"
+     },
+     {
+      "sl": "bolnišnica",
+      "en": "hospital"
+     }
+    ],
+    "explanation_sl": "Besede pri zdravniku in v lekarni.",
+    "words": [
+     {
+      "en": "pharmacist",
+      "sl": "lekarnar"
+     },
+     {
+      "en": "tablet",
+      "sl": "tableta"
+     },
+     {
+      "en": "injection",
+      "sl": "injekcija"
+     },
+     {
+      "en": "hospital",
+      "sl": "bolnišnica"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 4,
+   "exercise": {
+    "type": "translate",
+    "topic": "travel",
+    "categories": [
+     "vocab:travel"
+    ],
+    "sl": "odhod",
+    "accepted": [
+     "departure"
+    ],
+    "explanation_sl": "Odhod = departure, prihod = arrival.",
+    "words": [
+     {
+      "en": "departure",
+      "sl": "odhod"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 4,
+   "exercise": {
+    "type": "mc",
+    "topic": "food",
+    "categories": [
+     "grammar:past_simple"
+    ],
+    "question": "We ___ a lovely dinner last night.",
+    "options": [
+     "had",
+     "have",
+     "has"
+    ],
+    "answer": 0,
+    "explanation_sl": "»Last night« = včeraj zvečer, zato preteklik: have → had."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 4,
+   "exercise": {
+    "type": "fill",
+    "topic": "shopping",
+    "categories": [
+     "grammar:past_simple"
+    ],
+    "sentence": "She ___ a new coat yesterday.",
+    "accepted": [
+     "bought"
+    ],
+    "explanation_sl": "»Buy« ima nepravilen preteklik: bought.",
+    "hint_sl": "buy – preteklik"
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 4,
+   "exercise": {
+    "type": "mc",
+    "topic": "cooking",
+    "categories": [
+     "grammar:much_many"
+    ],
+    "question": "How ___ eggs do we need?",
+    "options": [
+     "many",
+     "much",
+     "a lot"
+    ],
+    "answer": 0,
+    "explanation_sl": "Stvari, ki jih lahko štejemo (eggs), vprašamo s »How many«."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 4,
+   "exercise": {
+    "type": "order",
+    "topic": "cooking",
+    "categories": [
+     "grammar:present_continuous",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "My",
+     "husband",
+     "is",
+     "cooking",
+     "dinner",
+     "now."
+    ],
+    "sl": "Moj mož zdaj kuha večerjo.",
+    "explanation_sl": "Za nekaj, kar se dogaja zdaj: is + glagol z -ing.",
+    "accepted": [
+     "Now my husband is cooking dinner."
+    ]
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 4,
+   "exercise": {
+    "type": "reading",
+    "topic": "shopping",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Yesterday I went to the new shopping centre with my sister. We wanted to buy a present for our mother's birthday. First we looked at scarves, but they were too expensive. In the end we bought her a nice cookbook and some flowers. Then we had coffee and cake in a small café.",
+    "questions": [
+     {
+      "question": "Why didn't they buy a scarf?",
+      "options": [
+       "It was too expensive.",
+       "Their mother doesn't like scarves.",
+       "The shop was closed."
+      ],
+      "answer": 0
+     },
+     {
+      "question": "What did they buy?",
+      "options": [
+       "a cookbook and flowers",
+       "a scarf and a cake",
+       "coffee and flowers"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»They were too expensive« = bili so predragi; kupili sta »a cookbook and some flowers«."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 4,
+   "exercise": {
+    "type": "reading",
+    "topic": "travel",
+    "categories": [
+     "reading:detail"
+    ],
+    "text": "Dear guests, breakfast is served in the restaurant from 7:00 to 10:00. The swimming pool is open from 9:00 to 21:00. Please leave your key at reception when you go out.",
+    "questions": [
+     {
+      "question": "What should guests do when they leave the hotel?",
+      "options": [
+       "leave the key at reception",
+       "go to the restaurant",
+       "close the swimming pool"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»Please leave your key at reception« = ključ pustite na recepciji.",
+    "title": "Hotel information"
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 4,
+   "exercise": {
+    "type": "translate",
+    "topic": "doctor",
+    "categories": [
+     "grammar:was_were"
+    ],
+    "sl": "Včeraj sem bila pri zdravniku.",
+    "accepted": [
+     "Yesterday I was at the doctor's.",
+     "I was at the doctor's yesterday.",
+     "Yesterday I went to the doctor.",
+     "I went to the doctor yesterday.",
+     "Yesterday I was at the doctor.",
+     "I was at the doctor yesterday."
+    ],
+    "explanation_sl": "Preteklik od »am« je »was«: I was at the doctor's."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 4,
+   "exercise": {
+    "type": "translate",
+    "topic": "food",
+    "categories": [
+     "grammar:some_any"
+    ],
+    "sl": "Ali imamo kaj kruha?",
+    "accepted": [
+     "Do we have any bread?",
+     "Have we got any bread?",
+     "Is there any bread?"
+    ],
+    "explanation_sl": "V vprašanjih uporabimo »any«."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 4,
+   "exercise": {
+    "type": "translate",
+    "topic": "free_time",
+    "categories": [
+     "grammar:present_continuous"
+    ],
+    "sl": "Zdaj berem knjigo.",
+    "accepted": [
+     "I am reading a book now.",
+     "I'm reading a book now.",
+     "Now I am reading a book.",
+     "Now I'm reading a book."
+    ],
+    "explanation_sl": "Kar se dogaja zdaj: am + reading."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 4,
+   "exercise": {
+    "type": "write",
+    "topic": "cooking",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Opiši, kaj si včeraj kuhala ali jedla (4–5 povedi).",
+    "hint_sl": "Uporabi preteklik: Yesterday I made … It was …",
+    "min_words": 20,
+    "max_words": 90,
+    "explanation_sl": "Kratko besedilo."
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 5,
+   "exercise": {
+    "type": "mc",
+    "topic": "travel",
+    "categories": [
+     "vocab:travel"
+    ],
+    "prompt_sl": "Kako se po angleško reče »zamuditi vlak«?",
+    "question": "zamuditi vlak",
+    "options": [
+     "miss the train",
+     "lose the train",
+     "late the train",
+     "pass the train"
+    ],
+    "answer": 0,
+    "explanation_sl": "Zamuditi = miss: I missed the train.",
+    "words": [
+     {
+      "en": "miss",
+      "sl": "zamuditi vlak"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 5,
+   "exercise": {
+    "type": "mc",
+    "topic": "doctor",
+    "categories": [
+     "vocab:doctor"
+    ],
+    "prompt_sl": "Kako se reče »stranski učinki« po angleško?",
+    "question": "stranski učinki",
+    "options": [
+     "side effects",
+     "symptoms",
+     "results",
+     "injuries"
+    ],
+    "answer": 0,
+    "explanation_sl": "Stranski učinki (zdravila) = side effects.",
+    "words": [
+     {
+      "en": "side effects",
+      "sl": "stranski učinki"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 5,
+   "exercise": {
+    "type": "match",
+    "topic": "home",
+    "categories": [
+     "vocab:home"
+    ],
+    "pairs": [
+     {
+      "sl": "najemnina",
+      "en": "rent"
+     },
+     {
+      "sl": "sosed",
+      "en": "neighbour"
+     },
+     {
+      "sl": "popravilo",
+      "en": "repair"
+     },
+     {
+      "sl": "račun",
+      "en": "bill"
+     }
+    ],
+    "explanation_sl": "Besede o stanovanju.",
+    "words": [
+     {
+      "en": "rent",
+      "sl": "najemnina"
+     },
+     {
+      "en": "neighbour",
+      "sl": "sosed"
+     },
+     {
+      "en": "repair",
+      "sl": "popravilo"
+     },
+     {
+      "en": "bill",
+      "sl": "račun"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "vocabulary",
+   "level": 5,
+   "exercise": {
+    "type": "translate",
+    "topic": "shopping",
+    "categories": [
+     "vocab:shopping"
+    ],
+    "sl": "vračilo denarja",
+    "accepted": [
+     "refund"
+    ],
+    "explanation_sl": "Vračilo denarja = refund: Can I have a refund?",
+    "words": [
+     {
+      "en": "refund",
+      "sl": "vračilo denarja"
+     }
+    ]
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 5,
+   "exercise": {
+    "type": "mc",
+    "topic": "weather",
+    "categories": [
+     "grammar:comparatives"
+    ],
+    "question": "This is the ___ day of the year.",
+    "options": [
+     "hottest",
+     "hotter",
+     "most hot"
+    ],
+    "answer": 0,
+    "explanation_sl": "Presežnik kratkih pridevnikov: the + -est (hot → the hottest)."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 5,
+   "exercise": {
+    "type": "fill",
+    "topic": "weather",
+    "categories": [
+     "grammar:going_to"
+    ],
+    "sentence": "Look at those clouds! It ___ rain.",
+    "accepted": [
+     "is going to"
+    ],
+    "explanation_sl": "Ko nekaj vidimo, da se bo zgodilo: is going to.",
+    "hint_sl": "going to"
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 5,
+   "exercise": {
+    "type": "mc",
+    "topic": "food",
+    "categories": [
+     "grammar:present_perfect"
+    ],
+    "question": "I have never ___ sushi.",
+    "options": [
+     "eaten",
+     "ate",
+     "eat"
+    ],
+    "answer": 0,
+    "explanation_sl": "Po »have« pride tretja oblika glagola: eat → eaten."
+   }
+  },
+  {
+   "skill": "grammar",
+   "level": 5,
+   "exercise": {
+    "type": "order",
+    "topic": "doctor",
+    "categories": [
+     "grammar:modals",
+     "grammar:word_order"
+    ],
+    "tokens": [
+     "You",
+     "should",
+     "drink",
+     "more",
+     "water."
+    ],
+    "sl": "Morala bi piti več vode.",
+    "explanation_sl": "Nasvet: should + glagol (brez »to«)."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 5,
+   "exercise": {
+    "type": "reading",
+    "topic": "travel",
+    "categories": [
+     "reading:detail",
+     "reading:inference"
+    ],
+    "text": "Many people in Slovenia go to the mountains at the weekend. The most popular mountain is Triglav, the highest mountain in the country. It is not an easy walk, and you should start early in the morning. Mountain huts sell simple food like soup and tea, but they are usually more expensive than restaurants in the valley, because everything has to be carried up.",
+    "questions": [
+     {
+      "question": "Why is food in mountain huts more expensive?",
+      "options": [
+       "Everything has to be carried up.",
+       "The huts are very big.",
+       "Only tourists eat there."
+      ],
+      "answer": 0
+     },
+     {
+      "question": "When should you start the walk to Triglav?",
+      "options": [
+       "early in the morning",
+       "in the afternoon",
+       "at night"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»Because everything has to be carried up« = ker je treba vse prinesti gor."
+   }
+  },
+  {
+   "skill": "reading",
+   "level": 5,
+   "exercise": {
+    "type": "reading",
+    "topic": "free_time",
+    "categories": [
+     "reading:main_idea"
+    ],
+    "text": "Hi Mojca, thanks for your message. I'm afraid I can't come to the concert on Friday, because my grandson is going to stay with us for the weekend. Have you ever been to the new restaurant by the river? We could go there next week instead. Let me know which day is best for you. Love, Irena",
+    "questions": [
+     {
+      "question": "What does Irena suggest?",
+      "options": [
+       "going to a restaurant next week",
+       "going to the concert on Friday",
+       "meeting her grandson"
+      ],
+      "answer": 0
+     }
+    ],
+    "explanation_sl": "»We could go there next week instead« = namesto tega bi lahko šli tja naslednji teden."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 5,
+   "exercise": {
+    "type": "translate",
+    "topic": "shopping",
+    "categories": [
+     "grammar:comparatives"
+    ],
+    "sl": "Ta trgovina je cenejša od tiste.",
+    "accepted": [
+     "This shop is cheaper than that one.",
+     "This shop is cheaper than that shop.",
+     "This store is cheaper than that one.",
+     "This store is cheaper than that store."
+    ],
+    "explanation_sl": "Primernik: cheap → cheaper than (cenejši od)."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 5,
+   "exercise": {
+    "type": "translate",
+    "topic": "family",
+    "categories": [
+     "grammar:going_to"
+    ],
+    "sl": "Poleti bomo obiskali hčerko.",
+    "accepted": [
+     "We are going to visit our daughter in the summer.",
+     "We're going to visit our daughter in the summer.",
+     "In the summer we are going to visit our daughter.",
+     "We are going to visit our daughter this summer.",
+     "We're going to visit our daughter this summer.",
+     "We will visit our daughter in the summer.",
+     "We'll visit our daughter in the summer.",
+     "In summer we are going to visit our daughter."
+    ],
+    "explanation_sl": "Za načrte uporabimo »are going to«."
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 5,
+   "exercise": {
+    "type": "translate",
+    "topic": "travel",
+    "categories": [
+     "grammar:present_perfect"
+    ],
+    "sl": "Ali si že kdaj bila v Londonu?",
+    "accepted": [
+     "Have you ever been to London?",
+     "Have you been to London?"
+    ],
+    "explanation_sl": "»Si že kdaj bila …?« = Have you ever been to …?"
+   }
+  },
+  {
+   "skill": "writing",
+   "level": 5,
+   "exercise": {
+    "type": "write",
+    "topic": "free_time",
+    "categories": [
+     "writing:sentence_structure"
+    ],
+    "prompt_sl": "Napiši kratko e-pošto prijateljici o svojih načrtih za poletje (5–6 povedi).",
+    "hint_sl": "Na primer: This summer I am going to … We want to …",
+    "min_words": 25,
+    "max_words": 110,
+    "explanation_sl": "Kratko besedilo."
+   }
+  }
+ ]
+}

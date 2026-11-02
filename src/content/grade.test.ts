@@ -52,3 +52,19 @@ test("placement seed is valid and covers every level and skill", () => {
   }
   assert.equal(p.writing.length, 6);
 });
+
+test("seed bank is valid and every exercise passes the consistency checks", async () => {
+  const { BankFileSchema } = await import("./store");
+  const { exerciseProblems } = await import("./schema");
+  const fs = await import("fs");
+  const path = await import("path");
+  const raw = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "..", "seed", "bank.json"), "utf8"));
+  const bank = BankFileSchema.parse(raw);
+  const problems = bank.exercises.flatMap((e, i) => exerciseProblems(e.exercise, `#${i}`));
+  assert.deepEqual(problems, []);
+  for (let level = 0; level <= 5; level++) {
+    for (const skill of ["vocabulary", "grammar", "reading", "writing"]) {
+      assert.ok(bank.exercises.some((e) => e.level === level && e.skill === skill), `${skill} L${level}`);
+    }
+  }
+});
