@@ -8,6 +8,8 @@ import { answerItem, completeSession, markFeedbackSeen, todayState } from "../en
 import { getLevels } from "../engine/levels";
 import { bestStreak, currentStreak, freezesLeft, settleDays, targetMinutes } from "../engine/habit";
 import { wordsLearnedCount } from "../engine/memory";
+import { badgeStates, practiceDays, rewardProgress, rewardsList, totalStars } from "../engine/rewards";
+import { learnerName } from "../content/encouragement";
 
 export const learnerRouter = Router();
 
@@ -33,9 +35,9 @@ learnerRouter.post("/recap/seen", (req, res) => {
 learnerRouter.get("/placement", (_req, res) => {
   const result = placementResult();
   if (result && db.prepare("SELECT value FROM settings WHERE key = 'placement_done' AND value = '1'").get()) {
-    return res.json({ done: true, result: withLabels(result) });
+    return res.json({ done: true, name: learnerName(), result: withLabels(result) });
   }
-  res.json(placementQuestion(startPlacement()));
+  res.json({ ...placementQuestion(startPlacement()), name: learnerName() });
 });
 
 learnerRouter.post("/placement/answer", (req, res) => {
@@ -50,7 +52,7 @@ learnerRouter.post("/placement/answer", (req, res) => {
   const next = answerPlacement(body.attemptId, body.key, body.answer as never, body.ms ?? null);
   if (next.done) {
     const result = placementResult();
-    return res.json({ ...next, result: result ? withLabels(result) : undefined });
+    return res.json({ ...next, name: learnerName(), result: result ? withLabels(result) : undefined });
   }
   res.json(next);
 });
@@ -89,12 +91,21 @@ learnerRouter.get("/progress", (_req, res) => {
   const recentWords = db
     .prepare("SELECT en, sl FROM words WHERE correct_days >= 2 AND last_result = 1 ORDER BY last_correct_date DESC LIMIT 12")
     .all();
+  const streak = currentStreak(today);
+  const stars = totalStars();
+  const wordsLearned = wordsLearnedCount();
   res.json({
+    name: learnerName(),
     skills: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: levels[s], levelLabel: levelLabel(levels[s]) })),
-    streak: currentStreak(today),
+    streak,
     bestStreak: bestStreak(),
+    stars,
+    fires: practiceDays(),
+    reward: rewardProgress(streak),
+    rewards: rewardsList().map((r) => ({ unlocked_on: r.unlocked_on, reward_text: r.reward_text, given: Boolean(r.given_at) })),
+    badges: badgeStates({ bestStreak: bestStreak(), wordsLearned, totalStars: stars }),
     freezesLeft: freezesLeft(today),
-    wordsLearned: wordsLearnedCount(),
+    wordsLearned,
     recentWords,
     sessions: totals.sessions,
     minutesPractised: Math.ceil(minutes.ms / 60000),

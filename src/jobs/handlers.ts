@@ -2,7 +2,8 @@ import { z } from "zod";
 import { db, nowIso } from "../db";
 import { LEVELS, levelLabel, parseLevelLabel, SKILLS, type Skill } from "../levels";
 import { callClaudeJson } from "../claude/run";
-import { GENERATOR_SYSTEM, GRADER_SYSTEM } from "../claude/prompts";
+import { GENERATOR_SYSTEM, GRADER_SYSTEM, withName } from "../claude/prompts";
+import { learnerName } from "../content/encouragement";
 import { CategorySchema, CATEGORY_LABELS_SL, ExerciseSchema, exerciseProblems, TOPICS, type Exercise } from "../content/schema";
 import { getExercise, saveExercise } from "../content/store";
 import { addDays, localDate } from "../util/dates";
@@ -100,7 +101,7 @@ Return JSON with "recap" and "items" (exactly ${slots.length} exercises).`;
   const schema = z.object({ recap: RecapSchema, items: z.array(ExerciseSchema) });
   return callClaudeJson({
     purpose,
-    system: GENERATOR_SYSTEM,
+    system: withName(GENERATOR_SYSTEM, learnerName()),
     prompt,
     schema,
     check: (out) => slotProblems(out.items, slots),
@@ -209,7 +210,7 @@ async function gradeWriting(payload: { reviewId: number }): Promise<void> {
   const task = prompt.type === "write" ? prompt.prompt_sl : "";
   const out = await callClaudeJson({
     purpose: review.placement_attempt_id ? "grade_placement_writing" : "grade_writing",
-    system: GRADER_SYSTEM,
+    system: withName(GRADER_SYSTEM, learnerName()),
     prompt: `The task (in Slovenian) was: "${task}"
 Expected level of the task: ${levelLabel(review.level)}.
 
@@ -244,7 +245,7 @@ async function gradeTranslation(payload: { reviewId: number }): Promise<void> {
   if (ex.type !== "translate") return;
   const out = await callClaudeJson({
     purpose: "grade_translation",
-    system: GRADER_SYSTEM,
+    system: withName(GRADER_SYSTEM, learnerName()),
     prompt: `She was asked to translate this Slovenian sentence into English (level ${levelLabel(review.level)}):
 "${ex.sl}"
 

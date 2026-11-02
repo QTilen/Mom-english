@@ -18,7 +18,13 @@ A calm, adaptive web app that helps a Slovenian speaker practise English **readi
   - Sessions grow by 3 minutes after 7 sessions completed within 8 days, up to a cap (25 minutes by default).
   - After 3 or more days away, sessions drop back one step.
   - 2 streak freezes per week cover missed days.
-- **Progress page** for her, and a **PIN-protected admin page** (`/admin.html`) for you. Admin shows:
+- **Warm and personal.** She is greeted by name ("Dobro jutro, Franja!"), and each day starts with a short thought in simple English with its Slovenian translation ("It's never too late to learn something new." – "Nikoli ni prepozno, da se naučiš nekaj novega."). Praise uses her name too. The name is set in admin.
+- **Things to collect:**
+  - 🔥 one fire per practice day
+  - ⭐ 1–3 stars per session: 1 for finishing, 2 for 70% or more, 3 for 90% or more
+  - badges for streak milestones (3, 7, 14, 30, 60, 100 days), words learned and stars collected
+  - 🎁 a **real family reward every 14 days in a row**. You set the reward text in admin. When she unlocks it she gets a big celebration screen ("Pokaži ta zaslon družini"), and you tick it off in admin once it's been given.
+- **Progress page** for her (levels, collection, reward countdown), and a **PIN-protected admin page** (`/admin.html`) for you. Admin shows:
   - levels and level history, an accuracy chart, and session history
   - the mistake log and her writing reviews
   - session length, cap, step and freezes, all editable
@@ -71,14 +77,11 @@ This follows the same pattern as the fitness dashboard: a systemd service, LAN-o
 
 ### 1. Prerequisites
 
-- **Node.js 20 or newer** (`node -v`). `better-sqlite3` 12 doesn't support Node 18. If the Pi still has Ubuntu's Node 18, install Node 22 from NodeSource:
+- **Node.js 20 or newer** (`node -v`). The Pi already has Node 22 from NodeSource, plus `build-essential` and `sqlite3`, installed on 2026-11-02. `better-sqlite3` compiles from source there, which takes a few minutes. To set up a fresh Pi:
   ```bash
-  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-  sudo apt install -y nodejs build-essential
+  curl -fsSL https://deb.nodesource.com/setup_22.x -o /tmp/nodesource_setup.sh && sudo -E bash /tmp/nodesource_setup.sh
+  sudo apt install -y nodejs build-essential sqlite3
   ```
-  > ⚠️ Upgrading Node also affects the fitness app. Rebuild its native module afterwards:
-  > `cd ~/fitness-repository/server && npm rebuild better-sqlite3 && sudo systemctl restart fitness-app`
-- `build-essential`, already present from the fitness app. `better-sqlite3` compiles from source on the Pi, which takes a few minutes.
 
 ### 2. Claude Code CLI, logged in with your subscription
 
@@ -89,7 +92,7 @@ claude -p "say pong" --output-format json          # should print a JSON result 
 echo "${ANTHROPIC_API_KEY:-unset}"                 # must print "unset"
 ```
 
-On a Pi without a screen, the login prints a link. Open it on your Mac and paste the code back into the terminal. The login is stored in `~/.claude/`. The service runs as the same user, so it uses that login directly. If the login ever expires, run `claude` again. The admin page shows the CLI's status and has a **Preizkusi Claude** (test Claude) button.
+On a Pi without a screen, the login prints a link. Open it on your Mac and paste the code back into the terminal. Claude Code is already installed on the Pi (`~/.local/bin/claude`), but its login has expired, so only the `claude` login step is needed. The login is stored in `~/.claude/`. The service runs as the same user, so it uses that login directly. If the login ever expires, run `claude` again. The admin page shows the CLI's status and has a **Preizkusi Claude** (test Claude) button.
 
 ### 3. Get the code and configure
 

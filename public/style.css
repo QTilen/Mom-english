@@ -314,13 +314,45 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
 .spinner { width: 36px; height: 36px; border: 4px solid var(--surface-2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 40px auto; }
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 14px 22px; border-radius: 12px; font-size: 18px; }
 
+/* --- Warmth & collection ------------------------------------------------------ */
+
+.greeting { font-size: 26px; font-weight: 700; margin: 20px 0 0; }
+.quote { background: var(--accent-soft); border-color: transparent; box-shadow: none; }
+.quote-label { font-size: 16px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.quote-en { font-family: var(--font-read); font-size: 26px; line-height: 1.35; margin: 0 0 6px; }
+.quote-sl { color: var(--muted); margin: 0; }
+
+.reward-strip { padding: 18px 24px; }
+.reward-label { font-weight: 600; margin-bottom: 10px; }
+.reward-track { display: flex; flex-wrap: wrap; gap: 6px; }
+.reward-track .slot { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.reward-track .slot.on { background: var(--warn-bg); }
+.reward-track .slot.gift { background: var(--accent-soft); font-size: 20px; }
+
+.stars { display: flex; justify-content: center; gap: 10px; font-size: 48px; margin: 6px 0 4px; }
+.star { display: inline-block; color: var(--muted); }
+.star.on { animation: pop 0.5s ease both; }
+
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.badge { text-align: center; background: var(--surface-2); border-radius: 16px; padding: 14px 10px; }
+.badge-icon { font-size: 40px; line-height: 1.2; }
+.badge-title { font-weight: 700; font-size: 17px; margin-top: 4px; }
+.badge-desc { font-size: 15px; color: var(--muted); }
+.badge.locked .badge-icon { filter: grayscale(1); opacity: 0.35; }
+.badge.locked .badge-title { color: var(--muted); }
+.badge.big .badge-icon { font-size: 56px; animation: pop 0.6s ease both; }
+
+.reward-unlocked .gift { font-size: 110px; line-height: 1; animation: flame 1.6s ease-in-out infinite; }
+.reward-text { font-size: 28px; font-weight: 700; color: var(--flame); margin: 10px 0; }
+
+@keyframes pop { 0% { transform: scale(0.2); opacity: 0; } 70% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes flame { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.08) rotate(2deg); } }
 @keyframes fall { to { transform: translateY(560px) rotate(540deg); opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .flame, .confetti i, .feedback { animation: none; }
+  .flame, .confetti i, .feedback, .star.on, .badge.big .badge-icon, .reward-unlocked .gift { animation: none; }
 }
 
 @media (max-width: 640px) {

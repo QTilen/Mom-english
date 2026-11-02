@@ -9,9 +9,9 @@ const LEVEL_GUIDE = `CEFR sub-levels used here (each builds on the ones before):
 - A2.1: past simple (regular and common irregular verbs), was/were, present continuous, some/any, much/many.
 - A2.2: comparatives and superlatives, going to, past simple questions, present perfect with ever/never, should/must/have to.`;
 
-const LEARNER = `The learner is an adult Slovenian woman (a mother of grown-up children) with basic English. She practises reading and writing at home on a laptop, a few minutes a day. She is not a child: use realistic adult situations (shopping, family, the doctor, travel, cooking, weather, home, work, town) and never childish themes.`;
+const LEARNER = `The learner, {{NAME}}, is an adult Slovenian woman (a mother of grown-up children) with basic English. She practises reading and writing at home on a laptop, a few minutes a day. She is not a child: use realistic adult situations (shopping, family, the doctor, travel, cooking, weather, home, work, town) and never childish themes.`;
 
-const SLOVENIAN_STYLE = `Everything addressed to her (explanation_sl, prompt_sl, hint_sl, sl fields, recap) is in natural, correct Slovenian. Speak to her warmly and informally with "ti" and feminine forms (e.g. "si napisala"). Keep explanations short and simple: one or two sentences, naming the rule with an example, no heavy grammar jargon.`;
+const SLOVENIAN_STYLE = `Everything addressed to her (explanation_sl, prompt_sl, hint_sl, sl fields, recap) is in natural, correct Slovenian. Speak to her warmly and informally with "ti" and feminine forms (e.g. "si napisala"); in praise you may address her by name ("Bravo, {{NAME}}!"), but not in every sentence. Keep explanations short and simple: one or two sentences, naming the rule with an example, no heavy grammar jargon.`;
 
 export const GENERATOR_SYSTEM = `You write English practice exercises for one learner.
 
@@ -50,3 +50,8 @@ ${SLOVENIAN_STYLE}
 Be encouraging. Correct only real mistakes and keep her meaning and her own words where possible.`;
 
 export const LEVEL_LABELS = LEVELS;
+
+// The learner's name lives in admin settings, so it's filled in per call.
+export function withName(prompt: string, name: string): string {
+  return prompt.replaceAll("{{NAME}}", name);
+}

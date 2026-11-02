@@ -12,6 +12,8 @@ import { getLevels } from "../engine/levels";
 import { bestStreak, currentStreak, freezesLeft, habitSettings, setTargetManually, targetMinutes } from "../engine/habit";
 import { wordsLearnedCount } from "../engine/memory";
 import { resetPlacement } from "../engine/placement";
+import { rewardProgress, rewardSettings, rewardsList, totalStars } from "../engine/rewards";
+import { learnerName } from "../content/encouragement";
 
 export const adminRouter = Router();
 
@@ -114,7 +116,10 @@ adminRouter.get("/overview", async (_req, res) => {
     bestStreak: bestStreak(),
     freezesLeft: freezesLeft(today),
     wordsLearned: wordsLearnedCount(),
-    settings: { targetMinutes: targetMinutes(), ...habitSettings() },
+    settings: { targetMinutes: targetMinutes(), ...habitSettings(), ...rewardSettings(), learnerName: learnerName() },
+    stars: totalStars(),
+    reward: rewardProgress(currentStreak(today)),
+    rewards: rewardsList(),
     sessions,
     readySession: ready ?? null,
     mistakeCounts,
@@ -133,14 +138,26 @@ adminRouter.post("/settings", (req, res) => {
       capMinutes: z.number().int().min(5).max(60).optional(),
       stepMinutes: z.number().int().min(1).max(10).optional(),
       freezesPerWeek: z.number().int().min(0).max(7).optional(),
+      rewardEveryDays: z.number().int().min(3).max(100).optional(),
+      rewardText: z.string().trim().min(1).max(200).optional(),
+      learnerName: z.string().trim().min(1).max(40).optional(),
     })
     .parse(req.body);
+  if (body.rewardEveryDays !== undefined) setSetting("reward_every_days", body.rewardEveryDays);
+  if (body.rewardText !== undefined) setSetting("reward_text", body.rewardText);
+  if (body.learnerName !== undefined) setSetting("learner_name", body.learnerName);
   if (body.capMinutes !== undefined) setSetting("cap_minutes", body.capMinutes);
   if (body.stepMinutes !== undefined) setSetting("step_minutes", body.stepMinutes);
   if (body.freezesPerWeek !== undefined) setSetting("freezes_per_week", body.freezesPerWeek);
   if (body.targetMinutes !== undefined) setTargetManually(body.targetMinutes, localDate());
   else if (body.capMinutes !== undefined && targetMinutes() > body.capMinutes) setTargetManually(body.capMinutes, localDate());
-  res.json({ ok: true, settings: { targetMinutes: targetMinutes(), ...habitSettings() } });
+  res.json({ ok: true, settings: { targetMinutes: targetMinutes(), ...habitSettings(), ...rewardSettings(), learnerName: learnerName() } });
+});
+
+// Tick off a reward once the family has actually given it.
+adminRouter.post("/rewards/:id/given", (req, res) => {
+  db.prepare("UPDATE rewards SET given_at = ? WHERE id = ? AND given_at IS NULL").run(nowIso(), Number(req.params.id));
+  res.json({ ok: true });
 });
 
 adminRouter.post("/regenerate", (_req, res) => {

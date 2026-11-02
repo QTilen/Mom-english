@@ -8,6 +8,8 @@ import { enqueue } from "../jobs/queue";
 import { adaptLevels, type LevelChange } from "./adapt";
 import { bestStreak, currentStreak, freezesLeft, markDayCompleted, maybeDropBack, maybeStepUp, settleDays, targetMinutes, type TargetChange } from "./habit";
 import { getLevels } from "./levels";
+import { learnerName, greeting, quoteForDay } from "../content/encouragement";
+import { maybeUnlockReward, rewardProgress, starsFor, takeNewBadges, totalStars } from "./rewards";
 import { dueCards, recordRight, recordWords, recordWrong, wordKeys, wordsLearnedCount } from "./memory";
 import { estimateSeconds, pickFromBank, pickReviewExercise, planBlueprint, planSlots, RECAP_SECONDS, type Blueprint, type Slot } from "./planner";
 
@@ -171,8 +173,8 @@ function startSession(sessionId: number, today: string): TargetChange | undefine
   return dropBack;
 }
 
-const CORRECT_MESSAGES = ["Odlično!", "Bravo!", "Tako je!", "Zelo dobro!", "Super, pravilno!", "Lepo!"];
-const WRONG_MESSAGES = ["Nič hudega – iz napak se učimo.", "Ni še čisto prav, pa nič hudega.", "Skoraj! Poglejmo skupaj."];
+const correctMessages = (name: string) => ["Odlično!", "Bravo!", "Tako je!", "Zelo dobro!", "Super, pravilno!", "Lepo!", `Bravo, ${name}!`, `Tako je, ${name}!`];
+const wrongMessages = (name: string) => ["Nič hudega – iz napak se učimo.", "Ni še čisto prav, pa nič hudega.", "Skoraj! Poglejmo skupaj.", `Nič hudega, ${name} – poglejmo skupaj.`];
 const pick = (xs: string[]) => xs[Math.floor(Math.random() * xs.length)];
 
 export interface Feedback {
@@ -186,13 +188,13 @@ export interface Feedback {
 function feedbackFor(result: GradeResult, ex: Exercise): Feedback {
   switch (result.outcome) {
     case "correct":
-      return { outcome: "correct", message_sl: pick(CORRECT_MESSAGES), correctDisplay: result.correctDisplay };
+      return { outcome: "correct", message_sl: pick(correctMessages(learnerName())), correctDisplay: result.correctDisplay };
     case "almost":
       return { outcome: "almost", message_sl: "Skoraj popolno!", note_sl: result.note_sl, correctDisplay: result.correctDisplay, explanation_sl: undefined };
     case "partial":
       return { outcome: "partial", message_sl: "Del je pravilen – lepo!", correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
     case "incorrect":
-      return { outcome: "incorrect", message_sl: pick(WRONG_MESSAGES), correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
+      return { outcome: "incorrect", message_sl: pick(wrongMessages(learnerName())), correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
     case "pending":
       return ex.type === "write"
         ? { outcome: "pending", message_sl: "Hvala za tvoje besedilo! Popravke in nasvete boš videla ob naslednji vaji.", correctDisplay: [] }
@@ -275,10 +277,12 @@ export function todayState() {
     .get(today) as SessionRow | undefined;
   const placementToday = !doneToday && (db.prepare("SELECT status FROM days WHERE date = ?").get(today) as { status: string } | undefined)?.status === "completed";
   if (doneToday || placementToday) {
+    const streak = currentStreak(today);
     return {
       screen: "done" as const,
       summary: doneToday?.summary_json ? JSON.parse(doneToday.summary_json) : undefined,
-      streak: currentStreak(today),
+      streak,
+      ...personal(today, streak),
     };
   }
 
@@ -301,7 +305,13 @@ export function todayState() {
     items: sessionItems(session.id).map(itemPayload),
     streak: currentStreak(today),
     dropBack,
+    ...personal(today, currentStreak(today)),
   };
+}
+
+// Name, greeting, the thought for the day and how close the next reward is.
+function personal(today: string, streak: number) {
+  return { name: learnerName(), greeting: greeting(), quote: quoteForDay(today), reward: rewardProgress(streak) };
 }
 
 // --- Answering -----------------------------------------------------------------
@@ -389,6 +399,12 @@ export interface SessionSummary {
   stepUp?: TargetChange;
   levelChanges: (LevelChange & { label_sl: string; fromLabel: string; toLabel: string })[];
   pendingReviews: number;
+  stars: number;
+  totalStars: number;
+  newBadges: ReturnType<typeof takeNewBadges>;
+  rewardUnlocked?: { reward_text: string; streak: number };
+  reward: ReturnType<typeof rewardProgress>;
+  name: string;
 }
 
 export function completeSession(sessionId: number): SessionSummary {
@@ -430,19 +446,33 @@ export function completeSession(sessionId: number): SessionSummary {
   const newWords = db.prepare("SELECT en, sl FROM words WHERE first_seen = ? LIMIT 8").all(today) as { en: string; sl: string }[];
 
   const graded = attempts.filter((a) => a.correct !== null);
+  const correct = graded.filter((a) => a.correct === 1).length;
+  const stars = starsFor(correct, graded.length);
+  db.prepare("UPDATE sessions SET stars = ? WHERE id = ?").run(stars, sessionId);
+  const streak = currentStreak(today);
+  const unlocked = maybeUnlockReward(today, streak);
+  const best = bestStreak();
+  const wordsLearned = wordsLearnedCount();
+  const starsTotal = totalStars();
   const summary: SessionSummary = {
-    correct: graded.filter((a) => a.correct === 1).length,
+    correct,
     total: graded.length,
     minutes: Math.max(1, Math.round(attempts.reduce((s, a) => s + (a.ms ?? 0), 0) / 60000)),
     learned,
     newWords,
-    streak: currentStreak(today),
-    bestStreak: bestStreak(),
+    streak,
+    bestStreak: best,
     freezesLeft: freezesLeft(today),
-    wordsLearned: wordsLearnedCount(),
+    wordsLearned,
     stepUp,
     levelChanges,
     pendingReviews: attempts.length - graded.length,
+    stars,
+    totalStars: starsTotal,
+    newBadges: takeNewBadges({ bestStreak: best, wordsLearned, totalStars: starsTotal }),
+    rewardUnlocked: unlocked ? { reward_text: unlocked.reward_text, streak: unlocked.streak } : undefined,
+    reward: rewardProgress(streak),
+    name: learnerName(),
   };
   db.prepare("UPDATE sessions SET summary_json = ? WHERE id = ?").run(JSON.stringify(summary), sessionId);
   enqueue("generate_session", { reason: "after_session", afterSessionId: sessionId });

@@ -66,6 +66,38 @@ function accuracyChart(sessions) {
   return svg;
 }
 
+function rewardsCard(d) {
+  const nameInput = h("input", { type: "text", value: d.settings.learnerName, style: "width:200px" });
+  const textInput = h("input", { type: "text", value: d.settings.rewardText, style: "width:100%", maxlength: "200" });
+  const everyInput = h("input", { type: "number", min: "3", max: "100", value: d.settings.rewardEveryDays });
+  const save = async (e) => {
+    e.preventDefault();
+    try {
+      await api("/admin/settings", { learnerName: nameInput.value, rewardText: textInput.value, rewardEveryDays: Number(everyInput.value) });
+      toast("Shranjeno.");
+      load();
+    } catch (err) {
+      toast(err.message);
+    }
+  };
+  const given = (id) => async () => {
+    await api(`/admin/rewards/${id}/given`, {});
+    load();
+  };
+  return h("form", { class: "card", onsubmit: save },
+    h("h2", {}, "Nagrade in osebno"),
+    h("div", { class: "form-row" }, h("label", {}, "Ime učenke"), nameInput),
+    h("div", { class: "form-row" }, h("label", {}, "Nagrada vsakih (dni zapored)"), everyInput),
+    h("div", { class: "form-row", style: "flex-wrap:wrap" }, h("label", {}, "Naslednja nagrada"), textInput),
+    h("p", { class: "small" }, `Trenutno: ⭐ ${d.stars} zvezdic · do nagrade še ${d.reward.daysLeft} dni (${d.reward.current}/${d.reward.every}). Besedilo nagrade se zabeleži ob odklepu.`),
+    h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")),
+    d.rewards.length
+      ? table(["Odklenjeno", "Niz", "Nagrada", ""],
+          d.rewards.map((r) => [r.unlocked_on, r.streak, r.reward_text,
+            r.given_at ? h("span", { class: "pill ok" }, `podeljena ${fmt(r.given_at)}`) : h("button", { class: "btn secondary", type: "button", onclick: given(r.id) }, "Označi kot podeljeno")]))
+      : h("p", { class: "small" }, "Nobena nagrada še ni odklenjena."));
+}
+
 function settingsCard(settings) {
   const fields = [
     ["targetMinutes", "Trenutna dolžina vaje (min)"],
@@ -174,6 +206,7 @@ async function load() {
         table(["Kdaj", "Veščina", "Sprememba", "Razlog"],
           d.levelHistory.slice().reverse().slice(0, 20).map((x) => [fmt(x.created_at), SKILL_SL[x.skill], `${x.from_level === null ? "–" : LEVELS[x.from_level]} → ${LEVELS[x.to_level]}`, REASON_SL[x.reason] ?? x.reason]))),
       h("div", {}, claudeCard(d.claude), settingsCard(d.settings))),
+    rewardsCard(d),
     actionsCard(d),
     h("div", { class: "card" }, h("h2", {}, "Uspešnost po vajah"), accuracyChart(d.sessions)),
     h("div", { class: "card" },

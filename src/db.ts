@@ -178,7 +178,23 @@ db.exec(`
     token TEXT PRIMARY KEY,
     expires_at TEXT NOT NULL
   );
+
+  -- Real-world rewards (agreed by the family) unlocked by long streaks.
+  CREATE TABLE IF NOT EXISTS rewards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    unlocked_on TEXT NOT NULL UNIQUE,
+    streak INTEGER NOT NULL,
+    reward_text TEXT NOT NULL,
+    given_at TEXT
+  );
 `);
+
+// Columns added after the first release; ALTER only when missing.
+function addColumn(table: string, column: string, definition: string): void {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  if (!cols.some((c) => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}
+addColumn("sessions", "stars", "INTEGER");
 
 export function nowIso(): string {
   return new Date().toISOString();

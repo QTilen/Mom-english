@@ -31,6 +31,45 @@ function plural(n, one, two, few, many) {
 }
 const daysWord = (n) => plural(n, "dan", "dneva", "dnevi", "dni");
 
+// --- Warm, personal bits -------------------------------------------------------
+
+let learnerName = "";
+
+function quoteCard(q) {
+  if (!q) return null;
+  return h("div", { class: "card quote" },
+    h("div", { class: "quote-label" }, "Misel za danes 💛"),
+    h("p", { class: "quote-en", lang: "en" }, q.en),
+    h("p", { class: "quote-sl" }, q.sl));
+}
+
+// "Do nagrade še 5 dni": one fire per streak day towards the next family reward.
+function rewardStrip(reward, { justUnlocked = false } = {}) {
+  if (!reward) return null;
+  const label = justUnlocked
+    ? "Nov krog do naslednje nagrade se začne jutri."
+    : reward.daysLeft === 0
+      ? "Nagrada je tvoja! 🎁"
+      : `Do nagrade še ${reward.daysLeft} ${daysWord(reward.daysLeft)} 🎁`;
+  return h("div", { class: "card reward-strip" },
+    h("div", { class: "reward-label" }, label),
+    h("div", { class: "reward-track", "aria-hidden": "true" },
+      Array.from({ length: reward.every }, (_, i) =>
+        h("span", { class: `slot ${i < reward.current ? "on" : ""} ${i === reward.every - 1 ? "gift" : ""}` }, i === reward.every - 1 ? "🎁" : i < reward.current ? "🔥" : ""))));
+}
+
+function starsRow(n) {
+  return h("div", { class: "stars", "aria-label": `${n} od 3 zvezdic` },
+    [0, 1, 2].map((i) => h("span", { class: i < n ? "star on" : "star", style: `animation-delay:${0.3 + i * 0.25}s` }, i < n ? "⭐" : "☆")));
+}
+
+function badgeCard(b, big = false) {
+  return h("div", { class: `badge ${b.earned === false ? "locked" : ""} ${big ? "big" : ""}` },
+    h("div", { class: "badge-icon" }, b.icon),
+    h("div", { class: "badge-title" }, b.title_sl),
+    h("div", { class: "badge-desc" }, b.earned === false ? `še ${b.remaining}` : b.desc_sl));
+}
+
 // --- One exercise card ---------------------------------------------------------
 
 // Shared by the placement test (no feedback, plus "Ne vem") and daily practice
@@ -104,11 +143,12 @@ function exerciseCard({ item, progress, heading, placement, submit, next }) {
 
 async function placementFlow() {
   const q = await api("/placement");
+  learnerName = q.name ?? learnerName;
   if (q.done) return placementResult(q.result);
   if (q.progress.done === 0) {
     show(
       h("div", { class: "card" },
-        h("h1", {}, "Dobrodošla! 🌷"),
+        h("h1", {}, learnerName ? `Dobrodošla, ${learnerName}! 🌷` : "Dobrodošla! 🌷"),
         h("p", { class: "lead" }, "Najprej bomo naredili kratek preizkus, da vidimo, kje začeti."),
         h("p", {}, "To ni izpit – ni dobrih ali slabih rezultatov. Vprašanja bodo postajala lažja ali težja, glede na tvoje odgovore."),
         h("p", {}, "Če česa ne veš, preprosto klikni »Ne vem«. Traja približno 10 minut."),
@@ -143,13 +183,14 @@ function placementResult(result) {
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, "1"),
       h("div", { class: "streak-caption" }, "dan v nizu"),
-      h("h1", {}, "Odlično opravljeno!"),
+      h("h1", {}, learnerName ? `Odlično opravljeno, ${learnerName}!` : "Odlično opravljeno!"),
       h("p", { class: "lead" }, "Prvi dan je za tabo. Zdaj vemo, kje začeti.")),
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Tvoja izhodiščna raven"),
       skills.map((s) => skillRow(s, s.skill === "writing" && result.writingPending ? "še pregledujemo ✍️" : null)),
       result?.writingPending ? h("p", { class: "muted" }, "Tvoje pisanje si bomo še natančno ogledali – raven pisanja se bo morda še popravila.") : null,
       h("p", {}, "Jutri te čaka prva prava vaja – samo 5 minut. Se vidimo!"),
+      h("p", { class: "muted" }, "Za vsak dan vadbe dobiš 🔥, za vsako vajo do tri ⭐, po 14 dneh zapored pa te čaka prava nagrada 🎁."),
       h("div", { class: "actions" }, h("a", { class: "btn", href: "#/napredek" }, "Moj napredek"))),
   );
 }
@@ -158,6 +199,7 @@ function placementResult(result) {
 
 async function todayFlow() {
   const state = await api("/today");
+  learnerName = state.name ?? learnerName;
   if (state.screen === "placement") return placementFlow();
   if (state.screen === "done") return doneScreen(state);
   const recapItems = state.items.filter((i) => i.phase === "recap");
@@ -175,6 +217,9 @@ function recapScreen(state, recapItems, mainItems) {
   const goOn = h("button", { class: "btn", onclick: () => mainScreen(state, mainItems, 0) }, "Na današnje vaje →");
 
   const nodes = [
+    h("p", { class: "greeting" }, state.greeting),
+    quoteCard(state.quote),
+    rewardStrip(state.reward),
     h("h1", {}, recap.title),
     state.dropBack
       ? h("div", { class: "card" },
@@ -301,24 +346,44 @@ function summaryDetails(summary) {
 }
 
 function completionScreen(summary) {
+  const name = summary.name || learnerName;
+  const headlines = name ? [`Bravo, ${name}!`, `Čudovito, ${name}!`, `Odlično, ${name}!`, `Super si, ${name}!`] : ["Bravo!", "Čudovito!", "Odlično!"];
   const messages = [
-    "Čudovito! Današnja vaja je opravljena.",
-    "Bravo! Vsak dan malo – in angleščina raste.",
-    "Super ti gre! Še en dan v nizu.",
-    "Odlično! Lahko si ponosna nase.",
+    "Današnja vaja je opravljena.",
+    "Vsak dan malo – in angleščina raste.",
+    "Še en dan v nizu. Lahko si ponosna nase.",
+    "Nikoli ni prepozno za nekaj novega – in ti to dokazuješ.",
   ];
   show(
+    summary.rewardUnlocked
+      ? h("div", { class: "card celebrate reward-unlocked" },
+          confetti(),
+          h("div", { class: "gift" }, "🎁"),
+          h("h1", {}, `${name ? `${name}, p` : "P"}rislužila si nagrado!`),
+          h("p", { class: "lead" }, `${summary.rewardUnlocked.streak} ${daysWord(summary.rewardUnlocked.streak)} zapored – to je res nekaj posebnega.`),
+          h("p", { class: "reward-text" }, summary.rewardUnlocked.reward_text),
+          h("p", { class: "muted" }, "Pokaži ta zaslon družini 💛"))
+      : null,
     h("div", { class: "card celebrate" },
-      confetti(),
+      summary.rewardUnlocked ? null : confetti(),
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, summary.streak),
       h("div", { class: "streak-caption" }, `${daysWord(summary.streak)} v nizu`),
-      h("h1", {}, pick(messages)),
+      h("h1", {}, pick(headlines)),
+      h("p", { class: "lead" }, pick(messages)),
+      summary.stars ? starsRow(summary.stars) : null,
+      summary.totalStars ? h("p", { class: "muted" }, `Skupaj že ${summary.totalStars} ⭐`) : null,
       summary.freezesLeft > 0
         ? h("p", { class: "muted" }, `❄️ Ta teden imaš še ${summary.freezesLeft} ${plural(summary.freezesLeft, "zamrznitev", "zamrznitvi", "zamrznitve", "zamrznitev")}: če kakšen dan izpustiš, niz ostane.`)
         : null),
+    summary.newBadges?.length
+      ? h("div", { class: "card" },
+          h("h2", { style: "margin-top:0" }, summary.newBadges.length === 1 ? "Nova značka! 🎉" : "Nove značke! 🎉"),
+          h("div", { class: "badges" }, summary.newBadges.map((b) => badgeCard(b, true))))
+      : null,
+    summary.reward ? rewardStrip(summary.reward, { justUnlocked: Boolean(summary.rewardUnlocked) }) : null,
     ...summaryDetails(summary).flat().filter(Boolean),
-    h("div", { class: "actions" }, h("a", { class: "btn", href: "#/napredek" }, "Moj napredek")),
+    h("div", { class: "actions" }, h("a", { class: "btn", href: "#/napredek" }, "Moja zbirka in napredek")),
   );
 }
 
@@ -328,8 +393,10 @@ function doneScreen(state) {
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, state.streak),
       h("div", { class: "streak-caption" }, `${daysWord(state.streak)} v nizu`),
-      h("h1", {}, "Danes si že vadila 🌷"),
+      h("h1", {}, state.name ? `Danes si že vadila, ${state.name} 🌷` : "Danes si že vadila 🌷"),
       h("p", { class: "lead" }, "Bravo! Nova vaja te čaka jutri. Se vidimo!")),
+    quoteCard(state.quote),
+    rewardStrip(state.reward),
     ...(state.summary ? summaryDetails(state.summary).flat().filter(Boolean) : []),
   );
 }
@@ -351,13 +418,25 @@ const DAY_NAMES = ["ned", "pon", "tor", "sre", "čet", "pet", "sob"];
 
 async function progressFlow() {
   const p = await api("/progress");
+  const earned = p.badges.filter((b) => b.earned).length;
   show(
-    h("h1", {}, "Moj napredek"),
+    h("h1", {}, p.name ? `Moj napredek, ${p.name}` : "Moj napredek"),
     h("div", { class: "stats" },
       stat(`🔥 ${p.streak}`, `${daysWord(p.streak)} v nizu`),
+      stat(`⭐ ${p.stars}`, "zbranih zvezdic"),
       stat(p.wordsLearned, "naučenih besed"),
-      stat(p.sessions, "opravljenih vaj"),
       stat(`${p.minutesPractised} min`, "skupaj vadila")),
+    rewardStrip(p.reward),
+    h("div", { class: "card" },
+      h("h2", { style: "margin-top:0" }, `Moja zbirka značk (${earned} od ${p.badges.length})`),
+      h("div", { class: "badges" }, p.badges.map((b) => badgeCard(b))),
+      h("p", { class: "muted", style: "margin-top:14px;font-size:17px" },
+        `🔥 ${p.fires} ${daysWord(p.fires)} vadbe · ⭐ do 3 zvezdice na vajo · 🎁 nagrada vsakih ${p.reward.every} dni zapored`)),
+    p.rewards.length
+      ? h("div", { class: "card" },
+          h("h2", { style: "margin-top:0" }, "Moje nagrade 🎁"),
+          h("ul", { class: "points" }, p.rewards.map((r) => h("li", {}, r.reward_text, h("span", { class: "muted", style: "display:block;font-size:16px" }, `${new Date(r.unlocked_on + "T12:00:00").toLocaleDateString("sl-SI")}${r.given ? " · prejeta ✔" : " · te še čaka"}`)))))
+      : null,
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Moja raven"),
       p.skills.map((s) => skillRow(s)),
