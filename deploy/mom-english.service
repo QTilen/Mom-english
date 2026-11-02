@@ -1,0 +1,27 @@
+# systemd unit for the Raspberry Pi. Replace YOUR_USER (3 places) with the Pi
+# user that owns the checkout and is logged in to the Claude CLI, then:
+#   sudo cp deploy/mom-english.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now mom-english
+[Unit]
+Description=Mom English (English reading & writing practice)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=/home/YOUR_USER/mom-english
+EnvironmentFile=/home/YOUR_USER/mom-english/.env
+# HOME must point at the user whose ~/.claude holds the subscription login,
+# and PATH must include where the claude binary lives (~/.local/bin for the
+# native installer).
+Environment=HOME=/home/YOUR_USER
+Environment=PATH=/home/YOUR_USER/.local/bin:/usr/local/bin:/usr/bin:/bin
+# Never let an API key leak in: the app must only use the subscription login.
+UnsetEnvironment=ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN
+ExecStart=/usr/bin/env node dist/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
