@@ -21,13 +21,19 @@ export function registerJob(type: string, run: JobHandler, onGiveUp?: (payload: 
   handlers.set(type, { run, onGiveUp });
 }
 
-// Skips the insert when an identical job is already waiting, so repeated
+// Job types where one waiting job already covers any new request: preparing
+// "the next session" twice in a row would just spend the subscription twice.
+const ONE_AT_A_TIME = new Set(["generate_session"]);
+
+// Skips the insert when an equivalent job is already waiting, so repeated
 // triggers (a double click, the safety check) don't pile up duplicate work.
 export function enqueue(type: string, payload: object = {}, runAfter: Date = new Date()): number | undefined {
   const payloadJson = JSON.stringify(payload);
-  const existing = db
-    .prepare("SELECT id FROM jobs WHERE type = ? AND payload_json = ? AND status IN ('queued', 'running')")
-    .get(type, payloadJson) as { id: number } | undefined;
+  const existing = (
+    ONE_AT_A_TIME.has(type)
+      ? db.prepare("SELECT id FROM jobs WHERE type = ? AND status = 'queued'").get(type)
+      : db.prepare("SELECT id FROM jobs WHERE type = ? AND payload_json = ? AND status IN ('queued', 'running')").get(type, payloadJson)
+  ) as { id: number } | undefined;
   if (existing) return existing.id;
   const info = db
     .prepare(

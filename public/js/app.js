@@ -67,7 +67,7 @@ function badgeCard(b, big = false) {
   return h("div", { class: `badge ${b.earned === false ? "locked" : ""} ${big ? "big" : ""}` },
     h("div", { class: "badge-icon" }, b.icon),
     h("div", { class: "badge-title" }, b.title_sl),
-    h("div", { class: "badge-desc" }, b.earned === false ? `še ${b.remaining}` : b.desc_sl));
+    h("div", { class: "badge-desc" }, b.earned === false ? b.remaining_sl : b.desc_sl));
 }
 
 // --- One exercise card ---------------------------------------------------------

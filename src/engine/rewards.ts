@@ -41,16 +41,32 @@ export interface CollectionStats {
   totalStars: number;
 }
 
+// Slovenian singular / dual / plural: 1 dan, 2 dneva, 3 dnevi, 5 dni.
+function plural(n: number, one: string, two: string, few: string, many: string): string {
+  const m = n % 100;
+  return m === 1 ? one : m === 2 ? two : m === 3 || m === 4 ? few : many;
+}
+
+function remainingText(kind: Badge["kind"], n: number): string {
+  if (kind === "streak") return `še ${n} ${plural(n, "dan", "dneva", "dnevi", "dni")}`;
+  if (kind === "words") return `še ${n} ${plural(n, "beseda", "besedi", "besede", "besed")}`;
+  return `še ${n} ⭐`;
+}
+
 export function badgeStates(stats: CollectionStats) {
   const value = (b: Badge) => (b.kind === "streak" ? stats.bestStreak : b.kind === "words" ? stats.wordsLearned : stats.totalStars);
-  return BADGES.map((b) => ({
-    id: b.id,
-    icon: b.icon,
-    title_sl: b.title_sl,
-    desc_sl: b.desc_sl,
-    earned: value(b) >= b.threshold,
-    remaining: Math.max(0, b.threshold - value(b)),
-  }));
+  return BADGES.map((b) => {
+    const remaining = Math.max(0, b.threshold - value(b));
+    return {
+      id: b.id,
+      icon: b.icon,
+      title_sl: b.title_sl,
+      desc_sl: b.desc_sl,
+      earned: remaining === 0,
+      remaining,
+      remaining_sl: remainingText(b.kind, remaining),
+    };
+  });
 }
 
 // Badges earned since we last celebrated any. Remembering what was already

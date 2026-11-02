@@ -89,7 +89,7 @@ function rewardsCard(d) {
     h("div", { class: "form-row" }, h("label", {}, "Ime učenke"), nameInput),
     h("div", { class: "form-row" }, h("label", {}, "Nagrada vsakih (dni zapored)"), everyInput),
     h("div", { class: "form-row", style: "flex-wrap:wrap" }, h("label", {}, "Naslednja nagrada"), textInput),
-    h("p", { class: "small" }, `Trenutno: ⭐ ${d.stars} zvezdic · do nagrade še ${d.reward.daysLeft} dni (${d.reward.current}/${d.reward.every}). Besedilo nagrade se zabeleži ob odklepu.`),
+    h("p", { class: "small" }, `Trenutno: ⭐ ${d.stars} · do nagrade še ${d.reward.daysLeft} dni (${d.reward.current}/${d.reward.every}). Besedilo nagrade se zabeleži ob odklepu.`),
     h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")),
     d.rewards.length
       ? table(["Odklenjeno", "Niz", "Nagrada", ""],
