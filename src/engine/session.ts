@@ -422,7 +422,9 @@ export function completeSession(sessionId: number): SessionSummary {
     for (const c of ex.content.categories) {
       if (seen.has(c) || learned.length >= 4) continue;
       seen.add(c);
-      learned.push({ category: c, label_sl: CATEGORY_LABELS_SL[c as Category] ?? c, example_en: fb.correctDisplay[0] ?? "" });
+      // A reading answer ("question → answer") makes a poor example on its own.
+      const example = ex.type === "reading" ? "" : (fb.correctDisplay[0] ?? "");
+      learned.push({ category: c, label_sl: CATEGORY_LABELS_SL[c as Category] ?? c, example_en: example });
     }
   }
   const newWords = db.prepare("SELECT en, sl FROM words WHERE first_seen = ? LIMIT 8").all(today) as { en: string; sl: string }[];

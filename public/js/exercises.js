@@ -62,6 +62,7 @@ function fill(view, { onChange, onEnter }) {
         onclick: () => {
           value = o;
           blank.textContent = o;
+          chips.forEach((c) => c.classList.toggle("selected", c.textContent === o));
           onChange();
         },
       }, o),

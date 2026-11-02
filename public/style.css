@@ -48,6 +48,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -200,6 +201,7 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
 }
 .chip:hover:not(:disabled) { border-color: var(--accent); }
 .chip.used { visibility: hidden; }
+.chip.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
 .answer-line {
   min-height: 76px;
   border: 2px dashed var(--line);
@@ -271,11 +273,12 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
 .writing-feedback .corrected { font-family: var(--font-read); font-size: 22px; background: var(--ok-bg); border-radius: 12px; padding: 12px 16px; margin: 10px 0; }
 
 .celebrate { text-align: center; padding-top: 24px; position: relative; overflow: hidden; }
-.flame { font-size: 96px; line-height: 1; display: inline-block; animation: flame 1.6s ease-in-out infinite; }
+.flame { font-size: 96px; line-height: 1; display: inline-block; margin-bottom: 8px; animation: flame 1.6s ease-in-out infinite; }
 .streak-number { font-size: 56px; font-weight: 800; color: var(--flame); line-height: 1.1; }
 .streak-caption { color: var(--muted); font-size: 20px; }
 
-.confetti { position: absolute; inset: 0; pointer-events: none; }
+.confetti { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.celebrate > :not(.confetti) { position: relative; z-index: 1; }
 .confetti i {
   position: absolute;
   top: -20px;
@@ -291,7 +294,7 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
 .stat .num { font-size: 36px; font-weight: 800; line-height: 1.1; }
 .stat .lbl { color: var(--muted); font-size: 17px; }
 
-.skill-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 16px; align-items: center; margin: 14px 0; }
+.skill-row { display: grid; grid-template-columns: 150px 1fr minmax(90px, auto); gap: 16px; align-items: center; margin: 14px 0; }
 .skill-row .name { font-weight: 600; }
 .skill-row .lvl { text-align: right; font-weight: 700; }
 .ladder { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
@@ -325,7 +328,7 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
   .card { padding: 22px 18px; }
   main, .topbar { padding-left: 16px; padding-right: 16px; }
   .question { font-size: 25px; }
-  .skill-row { grid-template-columns: 110px 1fr 70px; gap: 10px; }
+  .skill-row { grid-template-columns: 110px 1fr minmax(70px, auto); gap: 10px; }
   .match-row { grid-template-columns: 1fr; gap: 6px; }
   .match-row .arrow { display: none; }
 }

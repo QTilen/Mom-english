@@ -97,7 +97,7 @@ learnerRouter.get("/progress", (_req, res) => {
     wordsLearned: wordsLearnedCount(),
     recentWords,
     sessions: totals.sessions,
-    minutesPractised: Math.round(minutes.ms / 60000),
+    minutesPractised: Math.ceil(minutes.ms / 60000),
     targetMinutes: targetMinutes(),
     last14: Array.from({ length: 14 }, (_, i) => {
       const date = addDays(today, i - 13);

@@ -9,8 +9,12 @@ const dayFormatter = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
+// DEV_DAY_OFFSET lets a developer pretend it's a later day (to test streaks
+// and "yesterday" screens without waiting). Never set it in production.
+const dayOffsetMs = Number(process.env.DEV_DAY_OFFSET || 0) * 86_400_000;
+
 export function localDate(at: Date = new Date()): string {
-  return dayFormatter.format(at);
+  return dayFormatter.format(new Date(at.getTime() + dayOffsetMs));
 }
 
 export function addDays(date: string, days: number): string {

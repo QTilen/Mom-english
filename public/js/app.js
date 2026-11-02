@@ -144,7 +144,7 @@ function placementResult(result) {
       h("div", { class: "streak-number" }, "1"),
       h("div", { class: "streak-caption" }, "dan v nizu"),
       h("h1", {}, "Odlično opravljeno!"),
-      h("p", { class: "lead" }, "Prvi dan je za tabo. Zdaj vem, kje začeti.")),
+      h("p", { class: "lead" }, "Prvi dan je za tabo. Zdaj vemo, kje začeti.")),
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Tvoja izhodiščna raven"),
       skills.map((s) => skillRow(s, s.skill === "writing" && result.writingPending ? "še pregledujemo ✍️" : null)),
