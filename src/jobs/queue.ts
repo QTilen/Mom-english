@@ -13,11 +13,12 @@ interface JobRow {
   tries: number;
 }
 
-const handlers = new Map<string, JobHandler>();
+const handlers = new Map<string, { run: JobHandler; onGiveUp?: (payload: any) => void }>();
 let running = false;
 
-export function registerJob(type: string, handler: JobHandler): void {
-  handlers.set(type, handler);
+// onGiveUp runs once a job has failed for good, so callers can stop waiting on it.
+export function registerJob(type: string, run: JobHandler, onGiveUp?: (payload: any) => void): void {
+  handlers.set(type, { run, onGiveUp });
 }
 
 // Skips the insert when an identical job is already waiting, so repeated
@@ -69,7 +70,7 @@ export async function runNextJob(): Promise<boolean> {
   try {
     const handler = handlers.get(job.type);
     if (!handler) throw new Error(`No handler for job type ${job.type}`);
-    await handler(JSON.parse(job.payload_json));
+    await handler.run(JSON.parse(job.payload_json));
     db.prepare("UPDATE jobs SET status = 'done', finished_at = ?, last_error = NULL WHERE id = ?").run(nowIso(), job.id);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -86,6 +87,7 @@ export async function runNextJob(): Promise<boolean> {
         message.slice(0, 500),
         job.id,
       );
+      handlers.get(job.type)?.onGiveUp?.(JSON.parse(job.payload_json));
     }
     console.error(`[jobs] ${job.type}#${job.id} try ${tries} failed: ${message}`);
   } finally {
