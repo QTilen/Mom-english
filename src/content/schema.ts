@@ -120,7 +120,8 @@ export const FillSchema = z.object({
 export const OrderSchema = z.object({
   type: z.literal("order"),
   ...common,
-  words: z.array(text(30)).min(3).max(12),
+  // The sentence's words in the correct order; shuffled when shown.
+  tokens: z.array(text(30)).min(3).max(12),
   sl: text(200).optional(),
   accepted: z.array(text(250)).max(4).optional(),
 });
@@ -190,7 +191,7 @@ export function exerciseProblems(ex: Exercise, where = ""): string[] {
         p.push(`${at}options must include accepted[0]`);
       break;
     case "order":
-      if (ex.words.some((w) => /\s/.test(w))) p.push(`${at}each entry in words must be a single word`);
+      if (ex.tokens.some((w) => /\s/.test(w))) p.push(`${at}each entry in tokens must be a single word`);
       break;
     case "match":
       if (!unique(ex.pairs.map((x) => x.en)) || !unique(ex.pairs.map((x) => x.sl))) p.push(`${at}pairs must be distinct`);

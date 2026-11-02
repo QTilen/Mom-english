@@ -139,9 +139,9 @@ export function publicView(ex: Exercise, seed: number): Record<string, unknown> 
     case "fill":
       return { ...base, sentence: ex.sentence, options: ex.options ? seededShuffle(ex.options, seed) : undefined, hint_sl: ex.hint_sl };
     case "order": {
-      let words = seededShuffle(ex.words, seed);
+      let words = seededShuffle(ex.tokens, seed);
       // Make sure the shuffle didn't land on the answer.
-      for (let k = 1; words.join(" ") === ex.words.join(" ") && k < 5; k++) words = seededShuffle(ex.words, seed + k);
+      for (let k = 1; words.join(" ") === ex.tokens.join(" ") && k < 5; k++) words = seededShuffle(ex.tokens, seed + k);
       return { ...base, words, sl: ex.sl };
     }
     case "match":

@@ -154,7 +154,7 @@ export function grade(ex: Exercise, answer: Answer, skill: string): GradeResult 
       return m === "none" ? wrong(display) : right(display, m === "typo" ? "almost" : "correct");
     }
     case "order": {
-      const sentence = ex.words.join(" ");
+      const sentence = ex.tokens.join(" ");
       const given = "words" in answer ? answer.words.join(" ") : "";
       const ok = [sentence, ...(ex.accepted ?? [])].some((s) => normalize(s) === normalize(given));
       return ok ? right([sentence]) : wrong([sentence]);
