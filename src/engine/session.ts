@@ -8,7 +8,7 @@ import { enqueue } from "../jobs/queue";
 import { adaptLevels, type LevelChange } from "./adapt";
 import { bestStreak, currentStreak, freezesLeft, markDayCompleted, maybeDropBack, maybeStepUp, settleDays, targetMinutes, type TargetChange } from "./habit";
 import { getLevels } from "./levels";
-import { learnerName, greeting, quoteForDay } from "../content/encouragement";
+import { learnerName, greeting, quoteForDay, type Phrase } from "../content/encouragement";
 import { maybeUnlockReward, rewardProgress, starsFor, takeNewBadges, totalStars } from "./rewards";
 import { dueCards, recordRight, recordWords, recordWrong, wordKeys, wordsLearnedCount } from "./memory";
 import { estimateSeconds, pickFromBank, pickReviewExercise, planBlueprint, planSlots, RECAP_SECONDS, type Blueprint, type Slot } from "./planner";
@@ -173,13 +173,31 @@ function startSession(sessionId: number, today: string): TargetChange | undefine
   return dropBack;
 }
 
-const correctMessages = (name: string) => ["Odlično!", "Bravo!", "Tako je!", "Zelo dobro!", "Super, pravilno!", "Lepo!", `Bravo, ${name}!`, `Tako je, ${name}!`];
-const wrongMessages = (name: string) => ["Nič hudega – iz napak se učimo.", "Ni še čisto prav, pa nič hudega.", "Skoraj! Poglejmo skupaj.", `Nič hudega, ${name} – poglejmo skupaj.`];
-const pick = (xs: string[]) => xs[Math.floor(Math.random() * xs.length)];
+// Encouragement is in English (more reading practice), with the Slovenian
+// shown on hover. Explanations and instructions stay in Slovenian.
+const correctMessages = (name: string): Phrase[] => [
+  { en: "Excellent!", sl: "Odlično!" },
+  { en: "Well done!", sl: "Bravo!" },
+  { en: "That's right!", sl: "Tako je!" },
+  { en: "Very good!", sl: "Zelo dobro!" },
+  { en: "Great – correct!", sl: "Super, pravilno!" },
+  { en: `Well done, ${name}!`, sl: `Bravo, ${name}!` },
+  { en: `That's right, ${name}!`, sl: `Tako je, ${name}!` },
+];
+const wrongMessages = (name: string): Phrase[] => [
+  { en: "Don't worry – mistakes help us learn.", sl: "Nič hudega – napake nam pomagajo pri učenju." },
+  { en: "Not quite yet, but that's OK.", sl: "Ni še čisto prav, pa nič hudega." },
+  { en: "Almost! Let's look at it together.", sl: "Skoraj! Poglejmo skupaj." },
+  { en: `No problem, ${name} – let's look together.`, sl: `Nič hudega, ${name} – poglejmo skupaj.` },
+];
+const pick = <T,>(xs: T[]): T => xs[Math.floor(Math.random() * xs.length)];
 
 export interface Feedback {
   outcome: GradeResult["outcome"];
-  message_sl: string;
+  // Warm English phrase with its translation; pending answers get a plain
+  // Slovenian note (message_sl) instead, since it explains what happens next.
+  message?: Phrase;
+  message_sl?: string;
   correctDisplay: string[];
   explanation_sl?: string;
   note_sl?: string;
@@ -188,13 +206,13 @@ export interface Feedback {
 function feedbackFor(result: GradeResult, ex: Exercise): Feedback {
   switch (result.outcome) {
     case "correct":
-      return { outcome: "correct", message_sl: pick(correctMessages(learnerName())), correctDisplay: result.correctDisplay };
+      return { outcome: "correct", message: pick(correctMessages(learnerName())), correctDisplay: result.correctDisplay };
     case "almost":
-      return { outcome: "almost", message_sl: "Skoraj popolno!", note_sl: result.note_sl, correctDisplay: result.correctDisplay, explanation_sl: undefined };
+      return { outcome: "almost", message: { en: "Almost perfect!", sl: "Skoraj popolno!" }, note_sl: result.note_sl, correctDisplay: result.correctDisplay, explanation_sl: undefined };
     case "partial":
-      return { outcome: "partial", message_sl: "Del je pravilen – lepo!", correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
+      return { outcome: "partial", message: { en: "Partly right – nice!", sl: "Del je pravilen – lepo!" }, correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
     case "incorrect":
-      return { outcome: "incorrect", message_sl: pick(wrongMessages(learnerName())), correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
+      return { outcome: "incorrect", message: pick(wrongMessages(learnerName())), correctDisplay: result.correctDisplay, explanation_sl: ex.explanation_sl };
     case "pending":
       return ex.type === "write"
         ? { outcome: "pending", message_sl: "Hvala za tvoje besedilo! Popravke in nasvete boš videla ob naslednji vaji.", correctDisplay: [] }

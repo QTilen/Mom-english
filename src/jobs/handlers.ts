@@ -12,7 +12,7 @@ import { targetMinutes } from "../engine/habit";
 import { getLevels } from "../engine/levels";
 import { recordRight, recordWords, recordWrong, wordKeys } from "../engine/memory";
 import { applyPlacementWriting } from "../engine/placement";
-import { planBlueprint, type Slot } from "../engine/planner";
+import { planBlueprint, recentAccuracy, type Slot } from "../engine/planner";
 import { createBankSession, createSession, lastCompleted, logMistakes, sessionItems, type RecapPoint } from "../engine/session";
 import { registerJob } from "./queue";
 
@@ -26,7 +26,8 @@ function describeSlots(slots: Slot[]): string {
   return slots
     .map((s, i) => {
       const focus = s.focus ? `, focus: ${s.focus} (${CATEGORY_LABELS_SL[s.focus]})` : "";
-      return `${i + 1}. type: ${s.type}, skill: ${s.skill}, level: ${levelLabel(s.level)}, topic: ${s.topic}${focus}`;
+      const difficulty = s.difficulty ? `, difficulty: ${s.difficulty} of the level` : "";
+      return `${i + 1}. type: ${s.type}, skill: ${s.skill}, level: ${levelLabel(s.level)}, topic: ${s.topic}${focus}${difficulty}`;
     })
     .join("\n");
 }
@@ -58,6 +59,16 @@ function recentMistakesText(): string {
     .join("\n");
 }
 
+// Her most recent free writing, so Claude can calibrate to what she can really produce.
+function latestWritingText(): string {
+  const row = db
+    .prepare("SELECT text, result_json FROM writing_reviews WHERE kind = 'write' AND status = 'graded' ORDER BY id DESC LIMIT 1")
+    .get() as { text: string; result_json: string } | undefined;
+  if (!row) return "";
+  const r = JSON.parse(row.result_json);
+  return `Her latest free writing (graded ${r.score}/100, writing like ${r.cefr}): "${row.text.slice(0, 400)}"`;
+}
+
 function lastSessionText(): string | undefined {
   const prev = lastCompleted();
   if (!prev) return undefined;
@@ -79,6 +90,11 @@ async function generateItems(slots: Slot[], purpose: string, withRecap: boolean)
 ${describeSlots(slots)}
 
 Her current levels: ${SKILLS.map((s) => `${s} ${levelLabel(levels[s])}`).join(", ")}.
+Her recent accuracy: ${SKILLS.map((s) => {
+    const acc = recentAccuracy(s);
+    return `${s} ${acc === null ? "not enough data" : `${Math.round(acc * 100)}%`}`;
+  }).join(", ")}.
+${latestWritingText()}
 
 Her recent mistakes (practise these points again where a slot's focus allows, with new sentences):
 ${recentMistakesText()}
@@ -109,14 +125,24 @@ Return JSON with "recap" and "items" (exactly ${slots.length} exercises).`;
   });
 }
 
+const GENERATION_CHUNK = 12;
+
 async function generateSession(): Promise<void> {
   // Planned for her next visit, normally tomorrow.
   const nextDay = addDays(localDate(), 1);
   const blueprint = planBlueprint(getLevels(), targetMinutes(), nextDay);
   try {
-    const out = await generateItems(blueprint.slots, "generate_session", true);
-    const ids = out.items.map((item, i) => saveExercise(item, blueprint.slots[i].skill, blueprint.slots[i].level, "claude"));
-    createSession(blueprint, ids, out.recap as RecapPoint[], "claude");
+    // Long sessions (up to ~45 min, 40+ items) are generated in chunks so each
+    // CLI call stays quick and a bad reply only costs one chunk's retry.
+    const ids: number[] = [];
+    let recap: RecapPoint[] = [];
+    for (let start = 0; start < blueprint.slots.length; start += GENERATION_CHUNK) {
+      const slots = blueprint.slots.slice(start, start + GENERATION_CHUNK);
+      const out = await generateItems(slots, "generate_session", start === 0);
+      if (start === 0) recap = out.recap as RecapPoint[];
+      out.items.forEach((item, i) => ids.push(saveExercise(item, slots[i].skill, slots[i].level, "claude")));
+    }
+    createSession(blueprint, ids, recap, "claude");
   } catch (err) {
     // Make sure something is ready for tomorrow either way; a later retry
     // will replace this bank session if she hasn't started it yet.

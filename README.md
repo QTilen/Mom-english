@@ -4,21 +4,22 @@ A calm, adaptive web app that helps a Slovenian speaker practise English **readi
 
 ## What it does
 
-- **Placement test (first visit).** About 17–18 adaptive questions on vocabulary, grammar and reading. Each skill has its own staircase: one level up after a correct answer, one down after a wrong one. A "Ne vem" button saves her from guessing. The test ends with 2–3 short writing prompts that Claude grades in the background. The result is a separate CEFR sub-level per skill (Pre-A1, A1.1, A1.2, A1.3, A2.1, A2.2). The estimate is deliberately conservative so the first days feel easy.
+- **Placement test (first visit, up to 30 minutes, and she is told so).** 24 adaptive questions (8 each on vocabulary, grammar and reading). Each skill has its own staircase: one level up after a correct answer, one down after a wrong one. A "Ne vem" button saves her from guessing, and she can take a break and resume. The test ends with 3 short writing prompts that Claude grades in the background. The result is a separate CEFR sub-level per skill, from Pre-A1 to A2.2. Practice can later take her further, to B1.1 and B1.2. The estimate is deliberately conservative so the first days feel easy.
 - **Daily session, in three screens:**
   1. *Včeraj smo se naučili:* a recap of last time, Claude's feedback on her writing, and 1–2 quick review questions.
   2. Today's exercises.
   3. A celebration screen with her 🔥 streak and what she learned.
 - **Exercise types:** multiple choice, fill-in-the-blank, word ordering, matching, short reading with questions, Slovenian→English translation, and free writing. Topics are adult and everyday (shopping, family, doctor, travel, cooking, weather…).
 - **Instant, gentle feedback.** Every exercise already contains its answer and a short Slovenian explanation, so she never waits for Claude. Free writing, and translations that don't match a known answer, are graded by Claude in the background. She sees that feedback at the start of her next session.
-- **Adaptive levels.** A skill moves up after more than 85% over her last 3 sessions with that skill, and down after less than 50% over the last 2. Each session is weighted towards her weakest skills and recent mistakes.
+- **Adaptive levels.** A skill moves up after more than 85% over her last 3 sessions with that skill, and down after less than 50% over the last 2. Each session is weighted towards her weakest skills and recent mistakes. Between level changes, each exercise slot also gets a difficulty hint ("upper end" or "lower end" of the level) from her last 15 answers in that skill. Claude also sees her recent accuracy and her latest free writing, so new exercises stay in her sweet spot.
 - **Mistake log and spaced repetition.** Mistakes are logged by category (articles, word order, past simple, specific words…). Weak points come back at 1, 2, 4, 7, 14 and 30 days.
-- **Habit building:**
-  - Sessions start at 5 minutes. Length is set by the number of exercises, calibrated to her own speed; there is no visible timer.
-  - Sessions grow by 3 minutes after 7 sessions completed within 8 days, up to a cap (25 minutes by default).
-  - After 3 or more days away, sessions drop back one step.
+- **Habit building (Atomic Habits).** The placement test is the only long day. Daily practice then starts at **5 minutes** so showing up is easy.
+  - Length is set by the number of exercises, calibrated to her own speed; there is no visible timer.
+  - It climbs a ladder of small weekly steps (5 → 7 → 9 → 12 → 15 → 18 → 22 → 26 → 30 → 34 → 38 → 42 → 45 minutes), one step after each week with 7 sessions in 8 days. With steady practice that reaches **45 minutes after about 3 months**. The cap is adjustable in admin.
+  - After 3 or more days away, she goes back one step.
   - 2 streak freezes per week cover missed days.
-- **Warm and personal.** She is greeted by name ("Dobro jutro, Franja!"), and each day starts with a short thought in simple English with its Slovenian translation ("It's never too late to learn something new." – "Nikoli ni prepozno, da se naučiš nekaj novega."). Praise uses her name too. The name is set in admin.
+  - Long sessions are generated in chunks of 12 exercises and include one free-writing task per started quarter hour.
+- **Warm and personal, in English.** Encouragement is in simple English, as extra reading practice: the greeting ("Good morning, Franja!"), the daily thought ("It's never too late to learn something new."), praise after answers ("Well done, Franja!") and the celebration screens. Hovering over a phrase, or tapping it, shows the Slovenian translation. Instructions and grammar explanations stay in Slovenian. The name is set in admin.
 - **Things to collect:**
   - 🔥 one fire per practice day
   - ⭐ 1–3 stars per session: 1 for finishing, 2 for 70% or more, 3 for 90% or more

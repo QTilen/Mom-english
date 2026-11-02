@@ -16,6 +16,8 @@ export interface Slot {
   level: number;
   topic: Topic;
   focus?: Category;
+  // Where within the level to aim, from her recent accuracy in this skill.
+  difficulty?: "lower end" | "upper end";
 }
 
 export interface Blueprint {
@@ -61,6 +63,25 @@ function recentErrorRate(skill: Skill, today: string): number {
     .prepare("SELECT AVG(1 - COALESCE(score, correct)) AS err FROM attempts WHERE skill = ? AND correct IS NOT NULL AND local_date >= ?")
     .get(skill, addDays(today, -14)) as { err: number | null };
   return row.err ?? 0;
+}
+
+// Her accuracy over the last 15 graded answers in a skill (null if too few).
+export function recentAccuracy(skill: Skill): number | null {
+  const rows = db
+    .prepare("SELECT COALESCE(score, correct) AS s FROM attempts WHERE skill = ? AND correct IS NOT NULL ORDER BY id DESC LIMIT 15")
+    .all(skill) as { s: number }[];
+  if (rows.length < 5) return null;
+  return rows.reduce((sum, r) => sum + r.s, 0) / rows.length;
+}
+
+// Between level changes, nudge difficulty within the level so practice stays
+// in her sweet spot: stretch when it's going very well, ease off when it's hard.
+function difficultyFor(skill: Skill): Slot["difficulty"] {
+  const acc = recentAccuracy(skill);
+  if (acc === null) return undefined;
+  if (acc >= 0.85) return "upper end";
+  if (acc <= 0.6) return "lower end";
+  return undefined;
 }
 
 // Weaker skills (relative to her best) and skills with recent errors get more
@@ -121,8 +142,10 @@ export function planSlots(levels: Levels, budgetSeconds: number, today: string, 
 
   const typeFits = (t: ExerciseType) => {
     if (t === "write") {
-      // A free-writing task takes a few minutes; only once sessions are long enough.
-      return targetMinutes >= 8 && !slots.some((s) => s.type === "write") && secondsFor(t) <= remaining;
+      // A free-writing task takes a few minutes: none in the first tiny
+      // sessions, then one per started quarter hour.
+      const allowed = targetMinutes >= 8 ? Math.max(1, Math.floor(targetMinutes / 15)) : 0;
+      return slots.filter((s) => s.type === "write").length < allowed && secondsFor(t) <= remaining;
     }
     return secondsFor(t) <= remaining;
   };
@@ -150,7 +173,7 @@ export function planSlots(levels: Levels, budgetSeconds: number, today: string, 
     const slotFocus = focusIdx >= 0 ? focus.splice(focusIdx, 1)[0] : undefined;
     const vocabTopic = slotFocus?.startsWith("vocab:") ? (slotFocus.slice(6) as Topic) : undefined;
     const topic = vocabTopic && (TOPICS as readonly string[]).includes(vocabTopic) ? vocabTopic : topics[slots.length % topics.length];
-    slots.push({ ...chosen, level: levels[chosen.skill], topic, focus: slotFocus });
+    slots.push({ ...chosen, level: levels[chosen.skill], topic, focus: slotFocus, difficulty: difficultyFor(chosen.skill) });
     const seconds = secondsFor(chosen.type);
     spent[chosen.skill] += seconds;
     remaining -= seconds;

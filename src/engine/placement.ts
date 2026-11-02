@@ -1,5 +1,5 @@
 import { db, nowIso, setSetting } from "../db";
-import { clampLevel, MAX_LEVEL, type Skill } from "../levels";
+import { clampLevel, type Skill } from "../levels";
 import { grade, type Answer } from "../content/grade";
 import { loadPlacementFile, publicView } from "../content/store";
 import { localDate } from "../util/dates";
@@ -13,9 +13,13 @@ import { markDayCompleted } from "./habit";
 
 export const OBJECTIVE_SKILLS = ["vocabulary", "grammar", "reading"] as const;
 type ObjectiveSkill = (typeof OBJECTIVE_SKILLS)[number];
-export const ITEMS_PER_SKILL = 5;
+// 8 per skill + 3 writing prompts ≈ 25–30 minutes: long enough for the
+// staircase to settle, and she is told up front it can take up to 30 minutes.
+export const ITEMS_PER_SKILL = 8;
 const OBJECTIVE_TOTAL = ITEMS_PER_SKILL * OBJECTIVE_SKILLS.length;
 const START_LEVEL = 1; // A1.1
+// The placement pool covers Pre-A1 … A2.2; higher levels are reached through practice.
+const PLACEMENT_MAX_LEVEL = 5;
 
 interface HistoryEntry {
   itemId: string;
@@ -34,12 +38,12 @@ export interface PlacementState {
   writingDone: number;
 }
 
-// Final level for one skill: average "achieved" level over her last three
+// Final level for one skill: average "achieved" level over her last four
 // items (the item's level if right, one below if wrong), rounded down. This
 // deliberately errs low so the first sessions feel easy.
 export function estimateLevel(entries: { level: number; correct: boolean }[]): number {
   if (entries.length === 0) return START_LEVEL;
-  const last = entries.slice(-3).map((e) => (e.correct ? e.level : Math.max(0, e.level - 1)));
+  const last = entries.slice(-4).map((e) => (e.correct ? e.level : Math.max(0, e.level - 1)));
   return clampLevel(Math.floor(last.reduce((a, b) => a + b, 0) / last.length));
 }
 
@@ -60,8 +64,9 @@ function chooseWritingLevels(state: PlacementState): number[] {
   const avg = Math.floor(
     OBJECTIVE_SKILLS.reduce((sum, s) => sum + estimateLevel(state.history.filter((h) => h.skill === s)), 0) / OBJECTIVE_SKILLS.length,
   );
-  const levels = [avg - 1, avg, avg + 1].map((l) => Math.max(0, Math.min(MAX_LEVEL, l)));
-  return [...new Set(levels)];
+  // Three different prompts around her level, shifted inwards at the edges.
+  const start = Math.max(0, Math.min(PLACEMENT_MAX_LEVEL - 2, avg - 1));
+  return [start, start + 1, start + 2];
 }
 
 function loadState(attemptId: number): PlacementState {
@@ -141,7 +146,7 @@ export function answerPlacement(attemptId: number, key: string, answer: Placemen
     const skill = item.skill as ObjectiveSkill;
     const correct = !("skip" in answer && answer.skip) && grade(item.exercise, answer as Answer, skill).correct === true;
     state.history.push({ itemId: item.id, skill, level: item.level, correct, ms });
-    state.current[skill] = clampLevel(state.current[skill] + (correct ? 1 : -1));
+    state.current[skill] = Math.max(0, Math.min(PLACEMENT_MAX_LEVEL, state.current[skill] + (correct ? 1 : -1)));
     state.pending = nextObjective(state);
     if (!state.pending) {
       state.writingLevels = chooseWritingLevels(state);

@@ -1,21 +1,41 @@
 import { db, getNumberSetting, getSetting, setSetting } from "../db";
 import { addDays, daysBetween, isoWeek } from "../util/dates";
 
-// Atomic-habits style load management: start tiny, grow only after a week of
-// consistency, shrink one step after a real break. Streak freezes bridge the
-// occasional missed day so one bad day doesn't erase weeks of effort.
+// Atomic-habits style load management: start tiny so showing up is easy,
+// grow one rung only after a week of consistency, step back one rung after a
+// real break. Streak freezes bridge the occasional missed day.
 
 export const START_MINUTES = 5;
 const STEP_UP_SESSIONS = 7;
 const STEP_UP_WINDOW_DAYS = 8;
 const DROP_BACK_AFTER_DAYS_AWAY = 3;
+export const DEFAULT_CAP_MINUTES = 45;
+
+// Twelve weekly rungs from 5 to 45 minutes: about three months with steady
+// practice. Small steps while the habit is fragile, bigger ones once it holds.
+const BASE_LADDER = [5, 7, 9, 12, 15, 18, 22, 26, 30, 34, 38, 42, 45];
+
+export function ladder(cap: number): number[] {
+  const rungs = BASE_LADDER.filter((m) => m <= cap);
+  while (rungs[rungs.length - 1] < cap) rungs.push(Math.min(cap, rungs[rungs.length - 1] + 4));
+  return rungs;
+}
 
 export function habitSettings() {
+  const capMinutes = getNumberSetting("cap_minutes", DEFAULT_CAP_MINUTES);
   return {
-    capMinutes: getNumberSetting("cap_minutes", 25),
-    stepMinutes: getNumberSetting("step_minutes", 3),
+    capMinutes,
     freezesPerWeek: getNumberSetting("freezes_per_week", 2),
+    ladder: ladder(capMinutes),
   };
+}
+
+function nextRung(current: number, cap: number): number {
+  return ladder(cap).find((m) => m > current) ?? cap;
+}
+
+function previousRung(current: number, cap: number): number {
+  return [...ladder(cap)].reverse().find((m) => m < current) ?? START_MINUTES;
 }
 
 export function targetMinutes(): number {
@@ -94,7 +114,7 @@ export interface TargetChange {
 // After finishing a session: a week of consistency since the last change earns
 // a slightly longer session.
 export function maybeStepUp(today: string): TargetChange | undefined {
-  const { capMinutes, stepMinutes } = habitSettings();
+  const { capMinutes } = habitSettings();
   const current = targetMinutes();
   if (current >= capMinutes) return undefined;
   const changedOn = getSetting("target_changed_on") ?? "1970-01-01";
@@ -103,14 +123,14 @@ export function maybeStepUp(today: string): TargetChange | undefined {
     .prepare("SELECT COUNT(*) AS n FROM days WHERE status = 'completed' AND date >= ? AND date <= ? AND date > ?")
     .get(since, today, changedOn) as { n: number };
   if (row.n < STEP_UP_SESSIONS) return undefined;
-  const to = Math.min(capMinutes, current + stepMinutes);
+  const to = nextRung(current, capMinutes);
   setTarget(to, today);
   return { from: current, to };
 }
 
 // When she comes back after several days away: one step easier, once per break.
 export function maybeDropBack(today: string): TargetChange | undefined {
-  const { stepMinutes } = habitSettings();
+  const { capMinutes } = habitSettings();
   const current = targetMinutes();
   if (current <= START_MINUTES) return undefined;
   const last = db.prepare("SELECT MAX(date) AS d FROM days WHERE status = 'completed' AND date < ?").get(today) as {
@@ -120,7 +140,7 @@ export function maybeDropBack(today: string): TargetChange | undefined {
   const daysAway = daysBetween(last.d, today) - 1;
   const changedOn = getSetting("target_changed_on") ?? "1970-01-01";
   if (daysAway < DROP_BACK_AFTER_DAYS_AWAY || changedOn > last.d) return undefined;
-  const to = Math.max(START_MINUTES, current - stepMinutes);
+  const to = previousRung(current, capMinutes);
   setTarget(to, today);
   return { from: current, to };
 }

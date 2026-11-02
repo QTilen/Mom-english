@@ -4,7 +4,7 @@ import path from "path";
 import { z } from "zod";
 import { ROOT_DIR } from "../config";
 import { db, nowIso } from "../db";
-import { SKILLS, type Skill } from "../levels";
+import { MAX_LEVEL, SKILLS, type Skill } from "../levels";
 import { DEFAULT_INSTRUCTIONS_SL, Exercise, ExerciseSchema, exerciseProblems } from "./schema";
 
 export interface ExerciseRow {
@@ -64,7 +64,7 @@ export function queryExercises(where: string, params: unknown[]): ExerciseRow[] 
 // --- Seed files -------------------------------------------------------------
 
 const SkillSchema = z.enum(SKILLS);
-const LevelSchema = z.number().int().min(0).max(5);
+const LevelSchema = z.number().int().min(0).max(MAX_LEVEL);
 
 export const PlacementFileSchema = z.object({
   items: z.array(z.object({ id: z.string(), skill: SkillSchema, level: LevelSchema, exercise: ExerciseSchema })),

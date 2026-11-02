@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "../db";
-import { levelLabel, SKILL_LABELS_SL, SKILLS } from "../levels";
+import { levelLabel, MAX_LEVEL, SKILL_LABELS_SL, SKILLS } from "../levels";
 import { localDate, addDays } from "../util/dates";
 import { answerPlacement, placementQuestion, placementResult, startPlacement } from "../engine/placement";
 import { answerItem, completeSession, markFeedbackSeen, todayState } from "../engine/session";
@@ -65,7 +65,7 @@ learnerRouter.get("/placement/result", (_req, res) => {
 function withLabels(result: { levels: Record<string, number>; writingPending: boolean }) {
   return {
     writingPending: result.writingPending,
-    skills: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: result.levels[s], levelLabel: levelLabel(result.levels[s]) })),
+    skills: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: result.levels[s], levelLabel: levelLabel(result.levels[s]), maxLevel: MAX_LEVEL })),
   };
 }
 
@@ -96,7 +96,7 @@ learnerRouter.get("/progress", (_req, res) => {
   const wordsLearned = wordsLearnedCount();
   res.json({
     name: learnerName(),
-    skills: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: levels[s], levelLabel: levelLabel(levels[s]) })),
+    skills: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: levels[s], levelLabel: levelLabel(levels[s]), maxLevel: MAX_LEVEL })),
     streak,
     bestStreak: bestStreak(),
     stars,

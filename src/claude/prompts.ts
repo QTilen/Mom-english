@@ -7,7 +7,9 @@ const LEVEL_GUIDE = `CEFR sub-levels used here (each builds on the ones before):
 - A1.2: present simple with I/you/we/they, have/has, possessive adjectives, there is/are, prepositions of place.
 - A1.3: present simple he/she/it (-s), do/does questions and negatives, prepositions of time, can/can't, adverbs of frequency, irregular plurals.
 - A2.1: past simple (regular and common irregular verbs), was/were, present continuous, some/any, much/many.
-- A2.2: comparatives and superlatives, going to, past simple questions, present perfect with ever/never, should/must/have to.`;
+- A2.2: comparatives and superlatives, going to, past simple questions, present perfect with ever/never, should/must/have to.
+- B1.1: present perfect vs past simple, past continuous, will for decisions and predictions, first conditional, relative clauses (who/which/that), connected paragraphs.
+- B1.2: second conditional, passive (present/past), reported speech basics, used to, phrasal verbs of everyday life, opinions with reasons.`;
 
 const LEARNER = `The learner, {{NAME}}, is an adult Slovenian woman (a mother of grown-up children) with basic English. She practises reading and writing at home on a laptop, a few minutes a day. She is not a child: use realistic adult situations (shopping, family, the doctor, travel, cooking, weather, home, work, town) and never childish themes.`;
 
@@ -28,9 +30,11 @@ Rules per exercise type:
 - fill: "sentence" contains exactly one "___". "accepted" lists every correct filling (include contractions and full forms, e.g. "doesn't" and "does not"). At Pre-A1 to A1.2 also give 3 "options" that include accepted[0].
 - order: "tokens" is the correct sentence split into single words (4 to 10 tokens; the last token keeps the final punctuation). "sl" is the Slovenian meaning. "accepted" may list other fully correct word orders.
 - match: 4 pairs of Slovenian and English words from one topic.
-- reading: a short text whose length fits the level (Pre-A1: 1–3 very short sentences or a sign; A1.1: 20–35 words; A1.2: 35–50; A1.3: 50–70; A2.1: 70–90; A2.2: 90–120), then 1 or 2 multiple-choice questions with 3 options. Up to A1.1 write the questions and options in Slovenian; from A1.2 in simple English.
+- reading: a short text whose length fits the level (Pre-A1: 1–3 very short sentences or a sign; A1.1: 20–35 words; A1.2: 35–50; A1.3: 50–70; A2.1: 70–90; A2.2: 90–120; B1.1: 120–160; B1.2: 150–200), then 1 or 2 multiple-choice questions with 3 options. Up to A1.1 write the questions and options in Slovenian; from A1.2 in simple English.
 - translate: "sl" is a natural Slovenian sentence (or, for the vocabulary skill, a single word or short phrase). "accepted" lists 3 to 8 correct English translations, including contractions, British/American variants and common word-order variants. For the vocabulary skill list the word with and without an article where relevant.
 - write: a short, concrete everyday writing task in prompt_sl, with a hint_sl showing how to start. min_words/max_words fit the level.
+
+Each slot may carry a difficulty hint from her recent results: "upper end" means make it a real stretch within the level (fewer hints, no word options, slightly longer sentences, less common words); "lower end" means keep it gentle (very common words, short sentences, word options where the type allows, a helpful hint_sl).
 
 For every exercise:
 - "categories": 1–3 tags, all from this list: ${CATEGORIES.join(", ")}. Put the main teaching point first. If the slot has a focus, include it and make the exercise really practise that point.

@@ -1,4 +1,4 @@
-import { h } from "./api.js";
+import { h, warm } from "./api.js";
 
 // Renders one exercise. Every renderer returns the same small interface:
 //   el          – the DOM node
@@ -277,7 +277,7 @@ export function renderFeedback(fb) {
   if (!fb) return null;
   const showAnswer = fb.correctDisplay && fb.correctDisplay.length && fb.outcome !== "correct";
   return h("div", { class: `feedback ${fb.outcome}`, role: "status" },
-    h("div", { class: "msg" }, fb.message_sl),
+    h("div", { class: "msg" }, fb.message ? warm(fb.message) : fb.message_sl),
     fb.note_sl ? h("p", {}, fb.note_sl) : null,
     showAnswer
       ? h("div", {},

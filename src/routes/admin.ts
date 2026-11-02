@@ -3,7 +3,7 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import { z } from "zod";
 import { config } from "../config";
 import { db, nowIso, setSetting } from "../db";
-import { levelLabel, SKILL_LABELS_SL, SKILLS } from "../levels";
+import { LEVELS, levelLabel, MAX_LEVEL, SKILL_LABELS_SL, SKILLS } from "../levels";
 import { CATEGORY_LABELS_SL, type Category } from "../content/schema";
 import { callClaudeJson, claudeHealth } from "../claude/run";
 import { enqueue } from "../jobs/queue";
@@ -110,6 +110,7 @@ adminRouter.get("/overview", async (_req, res) => {
 
   res.json({
     today,
+    levelNames: LEVELS,
     levels: SKILLS.map((s) => ({ skill: s, label_sl: SKILL_LABELS_SL[s], level: levels[s], levelLabel: levelLabel(levels[s]) })),
     levelHistory,
     streak: currentStreak(today),
@@ -134,9 +135,8 @@ adminRouter.get("/overview", async (_req, res) => {
 adminRouter.post("/settings", (req, res) => {
   const body = z
     .object({
-      targetMinutes: z.number().int().min(5).max(60).optional(),
-      capMinutes: z.number().int().min(5).max(60).optional(),
-      stepMinutes: z.number().int().min(1).max(10).optional(),
+      targetMinutes: z.number().int().min(5).max(90).optional(),
+      capMinutes: z.number().int().min(5).max(90).optional(),
       freezesPerWeek: z.number().int().min(0).max(7).optional(),
       rewardEveryDays: z.number().int().min(3).max(100).optional(),
       rewardText: z.string().trim().min(1).max(200).optional(),
@@ -147,7 +147,6 @@ adminRouter.post("/settings", (req, res) => {
   if (body.rewardText !== undefined) setSetting("reward_text", body.rewardText);
   if (body.learnerName !== undefined) setSetting("learner_name", body.learnerName);
   if (body.capMinutes !== undefined) setSetting("cap_minutes", body.capMinutes);
-  if (body.stepMinutes !== undefined) setSetting("step_minutes", body.stepMinutes);
   if (body.freezesPerWeek !== undefined) setSetting("freezes_per_week", body.freezesPerWeek);
   if (body.targetMinutes !== undefined) setTargetManually(body.targetMinutes, localDate());
   else if (body.capMinutes !== undefined && targetMinutes() > body.capMinutes) setTargetManually(body.capMinutes, localDate());
@@ -165,7 +164,7 @@ adminRouter.post("/regenerate", (_req, res) => {
 });
 
 adminRouter.post("/refill", (req, res) => {
-  const { level } = z.object({ level: z.number().int().min(0).max(5) }).parse(req.body);
+  const { level } = z.object({ level: z.number().int().min(0).max(MAX_LEVEL) }).parse(req.body);
   res.json({ jobId: enqueue("refill_bank", { level }) });
 });
 

@@ -1,7 +1,7 @@
 import { api, h, toast } from "./api.js";
 
 const app = document.getElementById("app");
-const LEVELS = ["Pre-A1", "A1.1", "A1.2", "A1.3", "A2.1", "A2.2"];
+const LEVELS = ["Pre-A1", "A1.1", "A1.2", "A1.3", "A2.1", "A2.2", "B1.1", "B1.2"];
 const SKILL_SL = { vocabulary: "Besedišče", grammar: "Slovnica", reading: "Branje", writing: "Pisanje" };
 const REASON_SL = { placement: "preizkus", placement_writing: "preizkus (pisanje)", auto_up: "napredovala", auto_down: "nazaj" };
 const STATUS_SL = { ready: "pripravljena", in_progress: "v teku", completed: "opravljena" };
@@ -102,10 +102,9 @@ function settingsCard(settings) {
   const fields = [
     ["targetMinutes", "Trenutna dolžina vaje (min)"],
     ["capMinutes", "Največja dolžina (min)"],
-    ["stepMinutes", "Korak povečanja (min)"],
     ["freezesPerWeek", "Zamrznitve na teden"],
   ];
-  const inputs = Object.fromEntries(fields.map(([k]) => [k, h("input", { type: "number", min: "0", max: "60", value: settings[k] })]));
+  const inputs = Object.fromEntries(fields.map(([k]) => [k, h("input", { type: "number", min: "0", max: "90", value: settings[k] })]));
   const save = async (e) => {
     e.preventDefault();
     const body = {};
@@ -122,7 +121,7 @@ function settingsCard(settings) {
   return h("form", { class: "card", onsubmit: save },
     h("h2", {}, "Dolžina vaj"),
     fields.map(([k, label]) => h("div", { class: "form-row" }, h("label", {}, label), inputs[k])),
-    h("p", { class: "small" }, "Dolžina se sama poveča po 7 vajah v 8 dneh in zmanjša po 3+ dneh odsotnosti."),
+    h("p", { class: "small" }, `Lestvica: ${settings.ladder.join(" → ")} min. Za eno stopničko višje po 7 vajah v 8 dneh (pri redni vadbi ~3 mesece do vrha), za eno nižje po 3+ dneh odsotnosti.`),
     h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")));
 }
 

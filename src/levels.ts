@@ -1,7 +1,8 @@
 export const SKILLS = ["vocabulary", "grammar", "reading", "writing"] as const;
 export type Skill = (typeof SKILLS)[number];
 
-export const LEVELS = ["Pre-A1", "A1.1", "A1.2", "A1.3", "A2.1", "A2.2"] as const;
+// Placement tops out at A2.2; B1 is reached through months of practice.
+export const LEVELS = ["Pre-A1", "A1.1", "A1.2", "A1.3", "A2.1", "A2.2", "B1.1", "B1.2"] as const;
 export const MAX_LEVEL = LEVELS.length - 1;
 
 export const SKILL_LABELS_SL: Record<Skill, string> = {

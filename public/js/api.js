@@ -31,6 +31,16 @@ export function h(tag, attrs = {}, ...children) {
   return el;
 }
 
+// A warm English phrase; hovering (or tapping) shows the Slovenian. Used only
+// for encouragement and the daily thought – never for exercises.
+export function warm(phrase, tag = "span", attrs = {}) {
+  if (!phrase) return null;
+  if (typeof phrase === "string") return h(tag, attrs, phrase);
+  const el = h(tag, { ...attrs, class: `warm ${attrs.class ?? ""}`.trim(), lang: "en", tabindex: "0", "data-sl": phrase.sl, "aria-description": phrase.sl }, phrase.en);
+  el.addEventListener("click", () => el.classList.toggle("show"));
+  return el;
+}
+
 export function toast(text) {
   const el = h("div", { class: "toast", role: "status" }, text);
   document.body.append(el);

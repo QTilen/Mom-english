@@ -1,4 +1,4 @@
-import { api, h, toast } from "./api.js";
+import { api, h, toast, warm } from "./api.js";
 import { renderExercise, renderFeedback } from "./exercises.js";
 
 const app = document.getElementById("app");
@@ -38,9 +38,9 @@ let learnerName = "";
 function quoteCard(q) {
   if (!q) return null;
   return h("div", { class: "card quote" },
-    h("div", { class: "quote-label" }, "Misel za danes 💛"),
-    h("p", { class: "quote-en", lang: "en" }, q.en),
-    h("p", { class: "quote-sl" }, q.sl));
+    h("div", { class: "quote-label" }, warm({ en: "Thought for today 💛", sl: "Misel za danes 💛" })),
+    h("p", { class: "quote-en" }, warm(q)),
+    h("p", { class: "quote-hint" }, "💡 Za prevod pokaži z miško na angleški stavek."));
 }
 
 // "Do nagrade še 5 dni": one fire per streak day towards the next family reward.
@@ -148,10 +148,12 @@ async function placementFlow() {
   if (q.progress.done === 0) {
     show(
       h("div", { class: "card" },
-        h("h1", {}, learnerName ? `Dobrodošla, ${learnerName}! 🌷` : "Dobrodošla! 🌷"),
-        h("p", { class: "lead" }, "Najprej bomo naredili kratek preizkus, da vidimo, kje začeti."),
+        h("h1", {}, warm({ en: `Welcome${learnerName ? `, ${learnerName}` : ""}! 🌷`, sl: `Dobrodošla${learnerName ? `, ${learnerName}` : ""}! 🌷` })),
+        h("p", { class: "lead" }, "Najprej bomo naredili uvodni preizkus, da vidimo, kje začeti."),
         h("p", {}, "To ni izpit – ni dobrih ali slabih rezultatov. Vprašanja bodo postajala lažja ali težja, glede na tvoje odgovore."),
-        h("p", {}, "Če česa ne veš, preprosto klikni »Ne vem«. Traja približno 10 minut."),
+        h("p", {}, "Če česa ne veš, preprosto klikni »Ne vem«."),
+        h("p", {}, h("b", {}, "Preizkus traja največ 30 minut"), " – samo tokrat. Lahko si vzameš odmor: ko se vrneš, nadaljuješ tam, kjer si ostala."),
+        h("p", { class: "muted" }, "Potem bodo dnevne vaje čisto kratke: začnemo s 5 minutami na dan in počasi gradimo navado."),
         h("div", { class: "actions" }, h("button", { class: "btn", onclick: () => placementQuestion(q) }, "Začnimo"))),
     );
   } else {
@@ -183,7 +185,7 @@ function placementResult(result) {
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, "1"),
       h("div", { class: "streak-caption" }, "dan v nizu"),
-      h("h1", {}, learnerName ? `Odlično opravljeno, ${learnerName}!` : "Odlično opravljeno!"),
+      h("h1", {}, warm({ en: `Well done${learnerName ? `, ${learnerName}` : ""}!`, sl: `Odlično opravljeno${learnerName ? `, ${learnerName}` : ""}!` })),
       h("p", { class: "lead" }, "Prvi dan je za tabo. Zdaj vemo, kje začeti.")),
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Tvoja izhodiščna raven"),
@@ -217,7 +219,7 @@ function recapScreen(state, recapItems, mainItems) {
   const goOn = h("button", { class: "btn", onclick: () => mainScreen(state, mainItems, 0) }, "Na današnje vaje →");
 
   const nodes = [
-    h("p", { class: "greeting" }, state.greeting),
+    h("p", { class: "greeting" }, warm(state.greeting)),
     quoteCard(state.quote),
     rewardStrip(state.reward),
     h("h1", {}, recap.title),
@@ -347,30 +349,36 @@ function summaryDetails(summary) {
 
 function completionScreen(summary) {
   const name = summary.name || learnerName;
-  const headlines = name ? [`Bravo, ${name}!`, `Čudovito, ${name}!`, `Odlično, ${name}!`, `Super si, ${name}!`] : ["Bravo!", "Čudovito!", "Odlično!"];
+  const n = name ? `, ${name}` : "";
+  const headlines = [
+    { en: `Well done${n}!`, sl: `Bravo${n}!` },
+    { en: `Wonderful${n}!`, sl: `Čudovito${n}!` },
+    { en: `Excellent${n}!`, sl: `Odlično${n}!` },
+    { en: `You're doing great${n}!`, sl: `Super ti gre${n}!` },
+  ];
   const messages = [
-    "Današnja vaja je opravljena.",
-    "Vsak dan malo – in angleščina raste.",
-    "Še en dan v nizu. Lahko si ponosna nase.",
-    "Nikoli ni prepozno za nekaj novega – in ti to dokazuješ.",
+    { en: "Today's practice is done.", sl: "Današnja vaja je opravljena." },
+    { en: "A little every day – and your English grows.", sl: "Vsak dan malo – in tvoja angleščina raste." },
+    { en: "One more day in a row. Be proud of yourself!", sl: "Še en dan zapored. Bodi ponosna nase!" },
+    { en: "It's never too late to learn – and you are the proof.", sl: "Za učenje ni nikoli prepozno – in ti si dokaz za to." },
   ];
   show(
     summary.rewardUnlocked
       ? h("div", { class: "card celebrate reward-unlocked" },
           confetti(),
           h("div", { class: "gift" }, "🎁"),
-          h("h1", {}, `${name ? `${name}, p` : "P"}rislužila si nagrado!`),
-          h("p", { class: "lead" }, `${summary.rewardUnlocked.streak} ${daysWord(summary.rewardUnlocked.streak)} zapored – to je res nekaj posebnega.`),
+          h("h1", {}, warm({ en: `${name ? `${name}, y` : "Y"}ou have earned a reward!`, sl: `${name ? `${name}, p` : "P"}rislužila si nagrado!` })),
+          h("p", { class: "lead" }, warm({ en: `${summary.rewardUnlocked.streak} days in a row – that is really special.`, sl: `${summary.rewardUnlocked.streak} ${daysWord(summary.rewardUnlocked.streak)} zapored – to je res nekaj posebnega.` })),
           h("p", { class: "reward-text" }, summary.rewardUnlocked.reward_text),
-          h("p", { class: "muted" }, "Pokaži ta zaslon družini 💛"))
+          h("p", { class: "muted" }, warm({ en: "Show this screen to your family 💛", sl: "Pokaži ta zaslon družini 💛" })))
       : null,
     h("div", { class: "card celebrate" },
       summary.rewardUnlocked ? null : confetti(),
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, summary.streak),
       h("div", { class: "streak-caption" }, `${daysWord(summary.streak)} v nizu`),
-      h("h1", {}, pick(headlines)),
-      h("p", { class: "lead" }, pick(messages)),
+      h("h1", {}, warm(pick(headlines))),
+      h("p", { class: "lead" }, warm(pick(messages))),
       summary.stars ? starsRow(summary.stars) : null,
       summary.totalStars ? h("p", { class: "muted" }, `Skupaj že ${summary.totalStars} ⭐`) : null,
       summary.freezesLeft > 0
@@ -393,8 +401,8 @@ function doneScreen(state) {
       h("div", { class: "flame" }, "🔥"),
       h("div", { class: "streak-number" }, state.streak),
       h("div", { class: "streak-caption" }, `${daysWord(state.streak)} v nizu`),
-      h("h1", {}, state.name ? `Danes si že vadila, ${state.name} 🌷` : "Danes si že vadila 🌷"),
-      h("p", { class: "lead" }, "Bravo! Nova vaja te čaka jutri. Se vidimo!")),
+      h("h1", {}, warm({ en: `You have practised today${state.name ? `, ${state.name}` : ""} 🌷`, sl: `Danes si že vadila${state.name ? `, ${state.name}` : ""} 🌷` })),
+      h("p", { class: "lead" }, warm({ en: "Well done! A new practice is waiting for you tomorrow. See you then!", sl: "Bravo! Nova vaja te čaka jutri. Se vidimo!" }))),
     quoteCard(state.quote),
     rewardStrip(state.reward),
     ...(state.summary ? summaryDetails(state.summary).flat().filter(Boolean) : []),
@@ -410,7 +418,8 @@ function stat(num, label) {
 function skillRow(s, override) {
   return h("div", { class: "skill-row" },
     h("div", { class: "name" }, s.label_sl),
-    h("div", { class: "ladder", "aria-hidden": "true" }, [0, 1, 2, 3, 4, 5].map((i) => h("span", { class: i <= s.level ? "on" : "" }))),
+    h("div", { class: "ladder", "aria-hidden": "true", style: `grid-template-columns:repeat(${(s.maxLevel ?? 5) + 1},1fr)` },
+      Array.from({ length: (s.maxLevel ?? 5) + 1 }, (_, i) => h("span", { class: i <= s.level ? "on" : "" }))),
     h("div", { class: "lvl" }, override ?? s.levelLabel));
 }
 
@@ -440,7 +449,7 @@ async function progressFlow() {
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Moja raven"),
       p.skills.map((s) => skillRow(s)),
-      h("p", { class: "muted", style: "margin-top:14px;font-size:17px" }, "Ravni gredo od Pre-A1 (začetnik) do A2.2. Vsak stolpec je en korak naprej.")),
+      h("p", { class: "muted", style: "margin-top:14px;font-size:17px" }, "Ravni gredo od Pre-A1 (začetnik) do B1.2. Vsak stolpec je en korak naprej.")),
     h("div", { class: "card" },
       h("h2", { style: "margin-top:0" }, "Zadnja dva tedna"),
       h("div", { class: "days" },

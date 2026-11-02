@@ -1,6 +1,6 @@
 // Grows the fallback bank with Claude and writes it back to seed/bank.json so
 // it ships with the repo. Usage: npm run bank:generate -- [level ...]
-// (levels 0–5; default all). Needs a logged-in Claude CLI.
+// (levels 0–7; default all). Needs a logged-in Claude CLI.
 import fs from "fs";
 import path from "path";
 import { ROOT_DIR } from "../config";
@@ -11,7 +11,7 @@ import { refillBank } from "../jobs/handlers";
 async function main() {
   loadSeeds();
   const levels = process.argv.slice(2).map(Number);
-  for (const level of levels.length ? levels : [0, 1, 2, 3, 4, 5]) {
+  for (const level of levels.length ? levels : [0, 1, 2, 3, 4, 5, 6, 7]) {
     try {
       const n = await refillBank(level);
       console.log(`Level ${level}: added ${n} exercises`);

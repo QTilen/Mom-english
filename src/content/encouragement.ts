@@ -46,8 +46,15 @@ export function learnerName(): string {
   return getSetting("learner_name") ?? "Franja";
 }
 
-export function greeting(): string {
+export interface Phrase {
+  en: string;
+  sl: string;
+}
+
+export function greeting(): Phrase {
   const hour = localHour();
-  const hello = hour >= 5 && hour < 10 ? "Dobro jutro" : hour >= 10 && hour < 18 ? "Dober dan" : "Dober večer";
-  return `${hello}, ${learnerName()}!`;
+  const name = learnerName();
+  if (hour >= 5 && hour < 10) return { en: `Good morning, ${name}!`, sl: `Dobro jutro, ${name}!` };
+  if (hour >= 10 && hour < 18) return { en: `Hello, ${name}!`, sl: `Dober dan, ${name}!` };
+  return { en: `Good evening, ${name}!`, sl: `Dober večer, ${name}!` };
 }

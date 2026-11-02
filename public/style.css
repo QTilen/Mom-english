@@ -320,7 +320,45 @@ textarea.text-input { min-height: 180px; resize: vertical; line-height: 1.5; fon
 .quote { background: var(--accent-soft); border-color: transparent; box-shadow: none; }
 .quote-label { font-size: 16px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
 .quote-en { font-family: var(--font-read); font-size: 26px; line-height: 1.35; margin: 0 0 6px; }
-.quote-sl { color: var(--muted); margin: 0; }
+.quote-hint { color: var(--muted); font-size: 15px; margin: 8px 0 0; }
+
+/* English encouragement with the Slovenian translation on hover / tap. */
+.warm {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+.warm::after {
+  content: attr(data-sl);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 8px);
+  width: max-content;
+  max-width: min(440px, 80vw);
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 20;
+}
+.warm:hover::after, .warm:focus-visible::after, .warm.show::after { opacity: 1; }
+.celebrate { overflow: visible; }
+.celebrate .confetti { overflow: hidden; border-radius: var(--radius); }
 
 .reward-strip { padding: 18px 24px; }
 .reward-label { font-weight: 600; margin-bottom: 10px; }
