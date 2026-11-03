@@ -9,7 +9,7 @@ import { h, warm } from "./api.js";
 // `onChange` is called whenever ready() may have changed; `onEnter` on Return.
 
 export function renderExercise(view, { onChange = () => {}, onEnter = () => {}, skill } = {}) {
-  const renderers = { mc, fill, order, match, reading, translate, write };
+  const renderers = { mc, fill, order, match, reading, translate, write, picture };
   return renderers[view.type](view, { onChange, onEnter, skill });
 }
 
@@ -212,6 +212,30 @@ function reading(view, { onChange }) {
     el: h("div", {},
       h("div", { class: "reading-text", lang: "en" }, view.title ? h("span", { class: "reading-title" }, view.title) : null, view.text),
       view.questions.map((q, i) => h("div", { class: "reading-q" }, h("p", { class: "q" }, q.question), lists[i].el))),
+    ready: () => lists.every((l) => l.selected !== null),
+    answer: () => ({ options: lists.map((l) => l.selected) }),
+    lock: (fb) => {
+      lists.forEach((l, i) => {
+        const line = fb?.correctDisplay?.[i] ?? "";
+        const idx = line.lastIndexOf(" → ");
+        l.lock(idx >= 0 ? line.slice(idx + 3) : undefined);
+      });
+    },
+    focus: () => {},
+  };
+}
+
+// A screenshot (e.g. from a shop she likes) with questions about it. Clicking
+// the picture opens it full size in a new tab.
+function picture(view, { onChange }) {
+  const lists = view.questions.map((q) => optionList(q.options, onChange));
+  return {
+    el: h("div", {},
+      view.title ? h("p", { class: "question", lang: "en" }, view.title) : null,
+      h("a", { href: view.image, target: "_blank", rel: "noopener", class: "picture-link", title: "Odpri v polni velikosti" },
+        h("img", { class: "picture", src: view.image, alt: view.title ?? "Slika" })),
+      h("p", { class: "hint", style: "margin:6px 0 20px" }, "🔍 Klikni na sliko za večji prikaz."),
+      view.questions.map((q, i) => h("div", { class: "reading-q" }, h("p", { class: "q", lang: "en" }, q.question), lists[i].el))),
     ready: () => lists.every((l) => l.selected !== null),
     answer: () => ({ options: lists.map((l) => l.selected) }),
     lock: (fb) => {

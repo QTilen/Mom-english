@@ -38,8 +38,8 @@ interface RawResult {
   timedOut: boolean;
 }
 
-function runCli(args: string[], input: string, timeoutMs: number): Promise<RawResult> {
-  fs.mkdirSync(WORK_DIR, { recursive: true });
+function runCli(args: string[], input: string, timeoutMs: number, cwd = WORK_DIR): Promise<RawResult> {
+  fs.mkdirSync(cwd, { recursive: true });
   const env = { ...process.env };
   delete env.ANTHROPIC_API_KEY;
   delete env.ANTHROPIC_AUTH_TOKEN;
@@ -48,7 +48,7 @@ function runCli(args: string[], input: string, timeoutMs: number): Promise<RawRe
   delete env.CLAUDE_CODE_ENTRYPOINT;
 
   return new Promise((resolve, reject) => {
-    const child = spawn(config.claudeBin, args, { cwd: WORK_DIR, env, stdio: ["pipe", "pipe", "pipe"] });
+    const child = spawn(config.claudeBin, args, { cwd, env, stdio: ["pipe", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
     let timedOut = false;
@@ -103,7 +103,14 @@ function logCall(purpose: string, startedAt: number, error?: ClaudeError): void 
   );
 }
 
-async function invokeOnce(purpose: string, system: string, prompt: string, jsonSchema: object, timeoutMs: number) {
+async function invokeOnce(purpose: string, system: string, prompt: string, jsonSchema: object, timeoutMs: number, files: string[] = []) {
+  // With files (e.g. a screenshot), give the CLI a private folder holding only
+  // copies of them and allow just the Read tool, so it can look but not act.
+  let cwd = WORK_DIR;
+  if (files.length) {
+    cwd = fs.mkdtempSync(path.join(WORK_DIR, "files-"));
+    for (const f of files) fs.copyFileSync(f, path.join(cwd, path.basename(f)));
+  }
   const args = [
     "-p",
     "--output-format",
@@ -111,7 +118,8 @@ async function invokeOnce(purpose: string, system: string, prompt: string, jsonS
     "--model",
     config.claudeModel,
     "--tools",
-    "",
+    files.length ? "Read" : "",
+    ...(files.length ? ["--allowedTools", "Read"] : []),
     "--strict-mcp-config",
     "--no-session-persistence",
     "--system-prompt",
@@ -121,7 +129,9 @@ async function invokeOnce(purpose: string, system: string, prompt: string, jsonS
   ];
   const startedAt = Date.now();
   try {
-    const raw = await runCli(args, prompt, timeoutMs);
+    const raw = await runCli(args, prompt, timeoutMs, cwd).finally(() => {
+      if (cwd !== WORK_DIR) fs.rmSync(cwd, { recursive: true, force: true });
+    });
     if (raw.timedOut) throw new ClaudeError("timeout", `Claude CLI timed out after ${timeoutMs / 1000}s`);
 
     let wrapper: { is_error?: boolean; result?: string; structured_output?: unknown };
@@ -160,6 +170,8 @@ export interface ClaudeJsonRequest<T> {
   // Extra checks zod's JSON-schema export can't express (e.g. answer index in range).
   check?: (value: T) => string[];
   timeoutMs?: number;
+  // Files Claude may read (looked up by file name in its working folder).
+  files?: string[];
 }
 
 // Asks for JSON matching `schema`. If the reply doesn't validate, asks once more
@@ -176,7 +188,7 @@ export async function callClaudeJson<T>(req: ClaudeJsonRequest<T>): Promise<T> {
   let prompt = req.prompt;
   let lastProblems: string[] = [];
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const data = await invokeOnce(req.purpose, req.system, prompt, jsonSchema, timeoutMs);
+    const data = await invokeOnce(req.purpose, req.system, prompt, jsonSchema, timeoutMs, req.files);
     const parsed = req.schema.safeParse(data);
     if (parsed.success) {
       lastProblems = req.check ? req.check(parsed.data) : [];

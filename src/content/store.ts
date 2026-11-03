@@ -153,6 +153,13 @@ export function publicView(ex: Exercise, seed: number): Record<string, unknown> 
         text: ex.text,
         questions: ex.questions.map((q, i) => ({ question: q.question, options: seededShuffle(q.options, seed + i) })),
       };
+    case "picture":
+      return {
+        ...base,
+        image: `/images/${encodeURIComponent(ex.image)}`,
+        title: ex.title,
+        questions: ex.questions.map((q, i) => ({ question: q.question, options: seededShuffle(q.options, seed + i) })),
+      };
     case "translate":
       return { ...base, sl: ex.sl };
     case "write":

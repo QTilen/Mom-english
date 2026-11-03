@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const TOPICS = [
+  "fashion",
   "shopping",
   "family",
   "doctor",
@@ -17,6 +18,7 @@ export const TOPICS = [
 export type Topic = (typeof TOPICS)[number];
 
 export const TOPIC_LABELS_SL: Record<Topic, string> = {
+  fashion: "moda in spletno nakupovanje",
   shopping: "nakupovanje",
   family: "družina",
   doctor: "pri zdravniku",
@@ -58,6 +60,7 @@ export const CATEGORY_LABELS_SL = {
   "grammar:modals": "Should / must / have to",
   "grammar:word_order": "Besedni red",
   "grammar:imperatives": "Velelnik (Open the window.)",
+  "vocab:fashion": "Besede: moda in oblačila",
   "vocab:shopping": "Besede: nakupovanje",
   "vocab:family": "Besede: družina",
   "vocab:doctor": "Besede: pri zdravniku",
@@ -143,6 +146,18 @@ export const ReadingSchema = z.object({
     .max(3),
 });
 
+const QuestionSchema = z.object({ question: text(200), options: z.array(text(160)).min(2).max(4), answer: z.number().int().min(0).max(3) });
+
+// Questions about a real screenshot (an online shop, a travel site). Only
+// made from uploaded pictures, never invented for a session slot.
+export const PictureSchema = z.object({
+  type: z.literal("picture"),
+  ...common,
+  image: text(120),
+  title: text(80).optional(),
+  questions: z.array(QuestionSchema).min(1).max(4),
+});
+
 export const TranslateSchema = z.object({
   type: z.literal("translate"),
   ...common,
@@ -168,11 +183,12 @@ export const ExerciseSchema = z.discriminatedUnion("type", [
   ReadingSchema,
   TranslateSchema,
   WriteSchema,
+  PictureSchema,
 ]);
 
 export type Exercise = z.infer<typeof ExerciseSchema>;
 export type ExerciseType = Exercise["type"];
-export const EXERCISE_TYPES: ExerciseType[] = ["mc", "fill", "order", "match", "reading", "translate", "write"];
+export const EXERCISE_TYPES: ExerciseType[] = ["mc", "fill", "order", "match", "reading", "translate", "write", "picture"];
 
 // Consistency rules the schema alone can't express. Used both when loading
 // seed files and when validating Claude's output (so it gets a retry).
@@ -197,6 +213,7 @@ export function exerciseProblems(ex: Exercise, where = ""): string[] {
       if (!unique(ex.pairs.map((x) => x.en)) || !unique(ex.pairs.map((x) => x.sl))) p.push(`${at}pairs must be distinct`);
       break;
     case "reading":
+    case "picture":
       ex.questions.forEach((q, i) => {
         if (q.answer >= q.options.length) p.push(`${at}questions[${i}].answer out of range`);
         if (!unique(q.options)) p.push(`${at}questions[${i}].options must be different`);
@@ -217,4 +234,5 @@ export const DEFAULT_INSTRUCTIONS_SL: Record<ExerciseType, string> = {
   reading: "Preberi besedilo in odgovori na vprašanja.",
   translate: "Prevedi v angleščino.",
   write: "Napiši nekaj povedi v angleščini.",
+  picture: "Oglej si sliko in odgovori na vprašanja.",
 };

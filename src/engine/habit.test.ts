@@ -37,15 +37,15 @@ test("seven sessions in eight days step the session up", () => {
   for (let i = 0; i < 6; i++) markDayCompleted(addDays(MONDAY, i));
   assert.equal(maybeStepUp(addDays(MONDAY, 5)), undefined);
   markDayCompleted(addDays(MONDAY, 6));
-  assert.deepEqual(maybeStepUp(addDays(MONDAY, 6)), { from: 5, to: 7 });
-  assert.equal(targetMinutes(), 7);
+  assert.deepEqual(maybeStepUp(addDays(MONDAY, 6)), { from: 5, to: 9 });
+  assert.equal(targetMinutes(), 9);
 });
 
 test("three days away drops back one step, only once", () => {
   setSetting("target_minutes", 22);
   markDayCompleted(MONDAY);
   const back = addDays(MONDAY, 4);
-  assert.deepEqual(maybeDropBack(back), { from: 22, to: 18 });
+  assert.deepEqual(maybeDropBack(back), { from: 22, to: 21 });
   assert.equal(maybeDropBack(back), undefined);
 });
 
@@ -65,10 +65,11 @@ test("placement estimate is conservative", () => {
   assert.equal(estimateLevel([1, 0, 0, 0, 0].map((level) => ({ level, correct: false }))), 0);
 });
 
-test("the ladder reaches 45 minutes in twelve weekly steps", () => {
+test("the ladder reaches 30 minutes in four weekly steps and 45 in eight", () => {
   const rungs = ladder(45);
   assert.equal(rungs[0], 5);
+  assert.equal(rungs[4], 30);
   assert.equal(rungs.at(-1), 45);
-  assert.equal(rungs.length - 1, 12);
-  assert.deepEqual(ladder(20), [5, 7, 9, 12, 15, 18, 20]);
+  assert.equal(rungs.length - 1, 8);
+  assert.deepEqual(ladder(20), [5, 9, 14, 18, 20]);
 });

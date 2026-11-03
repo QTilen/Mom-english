@@ -51,11 +51,18 @@ function rewardStrip(reward, { justUnlocked = false } = {}) {
     : reward.daysLeft === 0
       ? "Nagrada je tvoja! 🎁"
       : `Do nagrade še ${reward.daysLeft} ${daysWord(reward.daysLeft)} 🎁`;
+  // One fire per day for the two-week reward; longer goals get a bar instead.
+  const track = reward.every <= 31
+    ? h("div", { class: "reward-track", "aria-hidden": "true" },
+        Array.from({ length: reward.every }, (_, i) =>
+          h("span", { class: `slot ${i < reward.current ? "on" : ""} ${i === reward.every - 1 ? "gift" : ""}` }, i === reward.every - 1 ? "🎁" : i < reward.current ? "🔥" : "")))
+    : h("div", { class: "reward-bar", "aria-hidden": "true" },
+        h("div", { class: "progress" }, h("div", { style: `width:${Math.round((reward.current / reward.every) * 100)}%` })),
+        h("span", {}, "🎁"));
   return h("div", { class: "card reward-strip" },
     h("div", { class: "reward-label" }, label),
-    h("div", { class: "reward-track", "aria-hidden": "true" },
-      Array.from({ length: reward.every }, (_, i) =>
-        h("span", { class: `slot ${i < reward.current ? "on" : ""} ${i === reward.every - 1 ? "gift" : ""}` }, i === reward.every - 1 ? "🎁" : i < reward.current ? "🔥" : ""))));
+    track,
+    reward.label_sl ? h("div", { class: "muted", style: "font-size:16px;margin-top:8px" }, `Naslednja nagrada: ${reward.label_sl} zapored (🔥 ${reward.current}/${reward.every})`) : null);
 }
 
 function starsRow(n) {
@@ -440,7 +447,7 @@ async function progressFlow() {
       h("h2", { style: "margin-top:0" }, `Moja zbirka značk (${earned} od ${p.badges.length})`),
       h("div", { class: "badges" }, p.badges.map((b) => badgeCard(b))),
       h("p", { class: "muted", style: "margin-top:14px;font-size:17px" },
-        `🔥 ${p.fires} ${daysWord(p.fires)} vadbe · ⭐ do 3 zvezdice na vajo · 🎁 nagrada vsakih ${p.reward.every} dni zapored`)),
+        `🔥 ${p.fires} ${daysWord(p.fires)} vadbe · ⭐ do 3 zvezdice na vajo · 🎁 nagrade po 2 tednih, 1, 2, 6 in 12 mesecih zapored`)),
     p.rewards.length
       ? h("div", { class: "card" },
           h("h2", { style: "margin-top:0" }, "Moje nagrade 🎁"),

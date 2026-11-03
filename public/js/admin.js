@@ -68,12 +68,13 @@ function accuracyChart(sessions) {
 
 function rewardsCard(d) {
   const nameInput = h("input", { type: "text", value: d.settings.learnerName, style: "width:200px" });
-  const textInput = h("input", { type: "text", value: d.settings.rewardText, style: "width:100%", maxlength: "200" });
-  const everyInput = h("input", { type: "number", min: "3", max: "100", value: d.settings.rewardEveryDays });
+  const unlocked = new Set(d.rewards.map((r) => r.streak));
+  const textInputs = d.rewardPlan.map((p) => h("input", { type: "text", value: p.text, style: "flex:1;min-width:220px", maxlength: "200" }));
   const save = async (e) => {
     e.preventDefault();
     try {
-      await api("/admin/settings", { learnerName: nameInput.value, rewardText: textInput.value, rewardEveryDays: Number(everyInput.value) });
+      const rewardTexts = Object.fromEntries(d.rewardPlan.map((p, i) => [p.days, textInputs[i].value]));
+      await api("/admin/settings", { learnerName: nameInput.value, rewardTexts });
       toast("Shranjeno.");
       load();
     } catch (err) {
@@ -87,15 +88,75 @@ function rewardsCard(d) {
   return h("form", { class: "card", onsubmit: save },
     h("h2", {}, "Nagrade in osebno"),
     h("div", { class: "form-row" }, h("label", {}, "Ime učenke"), nameInput),
-    h("div", { class: "form-row" }, h("label", {}, "Nagrada vsakih (dni zapored)"), everyInput),
-    h("div", { class: "form-row", style: "flex-wrap:wrap" }, h("label", {}, "Naslednja nagrada"), textInput),
-    h("p", { class: "small" }, `Trenutno: ⭐ ${d.stars} · do nagrade še ${d.reward.daysLeft} dni (${d.reward.current}/${d.reward.every}). Besedilo nagrade se zabeleži ob odklepu.`),
+    h("p", { class: "small" }, "Nagrade za niz dni zapored (vsaka se odklene enkrat):"),
+    d.rewardPlan.map((p, i) => h("div", { class: "form-row", style: "flex-wrap:wrap" },
+      h("label", {}, `${p.label_sl} (${p.days} dni)${unlocked.has(p.days) ? " ✔" : ""}`), textInputs[i])),
+    h("p", { class: "small" }, `Trenutno: ⭐ ${d.stars} · do naslednje nagrade (${d.reward.label_sl}) še ${d.reward.daysLeft} dni, niz ${d.reward.current}/${d.reward.every}. Besedilo se zabeleži ob odklepu.`),
     h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")),
     d.rewards.length
       ? table(["Odklenjeno", "Niz", "Nagrada", ""],
           d.rewards.map((r) => [r.unlocked_on, r.streak, r.reward_text,
             r.given_at ? h("span", { class: "pill ok" }, `podeljena ${fmt(r.given_at)}`) : h("button", { class: "btn secondary", type: "button", onclick: given(r.id) }, "Označi kot podeljeno")]))
       : h("p", { class: "small" }, "Nobena nagrada še ni odklenjena."));
+}
+
+function imagesCard(images) {
+  const STATUS = { pending: "Claude pripravlja …", ready: "pripravljena", failed: "ni uspelo" };
+  const files = h("input", { type: "file", accept: "image/png,image/jpeg,image/webp", multiple: true });
+  const source = h("input", { type: "text", list: "image-sources", placeholder: "npr. Zalando", style: "width:200px" });
+  const upload = async (e) => {
+    e.preventDefault();
+    if (!files.files.length) return toast("Najprej izberi sliko.");
+    for (const file of files.files) {
+      const res = await fetch(`/api/admin/images?source=${encodeURIComponent(source.value)}`, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+        credentials: "same-origin",
+      });
+      if (!res.ok) return toast((await res.json().catch(() => ({}))).error ?? "Nalaganje ni uspelo.");
+    }
+    toast("Naloženo – Claude bo iz slik v ozadju pripravil vaje.");
+    load();
+  };
+  const remove = (id) => async () => {
+    if (!confirm("Odstranim to sliko in njene vaje?")) return;
+    await api(`/admin/images/${id}/delete`, {});
+    load();
+  };
+  return h("form", { class: "card", onsubmit: upload },
+    h("h2", {}, "Slike za vaje 🖼️"),
+    h("p", { class: "small" }, "Naloži posnetke zaslona angleških strani (Zalando, About You, BestSecret, potovanje na Japonsko …). Claude iz vsake naredi vajo z vprašanji o sliki in nekaj vaj za nove besede. Slike ostanejo samo na Pi-ju."),
+    h("datalist", { id: "image-sources" }, ["Zalando", "About You", "BestSecret", "Japan travel", "Booking.com"].map((s) => h("option", { value: s }))),
+    h("div", { class: "form-row", style: "flex-wrap:wrap" }, files, source, h("button", { class: "btn", type: "submit" }, "Naloži")),
+    images.length
+      ? h("div", { class: "image-grid" },
+          images.map((img) => h("div", { class: "image-tile" },
+            h("a", { href: `/images/${img.filename}`, target: "_blank" }, h("img", { src: `/images/${img.filename}`, alt: img.source ?? "slika", loading: "lazy" })),
+            h("div", { class: "small" }, `${img.source ?? "–"} · ${STATUS[img.status] ?? img.status}`),
+            h("button", { class: "btn secondary small", type: "button", onclick: remove(img.id) }, "Odstrani"))))
+      : h("p", { class: "small" }, "Še ni slik."));
+}
+
+function interestsCard(d) {
+  const area = h("textarea", { class: "text-input", style: "min-height:110px;font-size:16px", maxlength: "1500" }, d.interests);
+  const boxes = d.topics.map((t) => h("input", { type: "checkbox", value: t.id, checked: t.favorite }));
+  const save = async (e) => {
+    e.preventDefault();
+    try {
+      await api("/admin/settings", { interests: area.value, favoriteTopics: boxes.filter((b) => b.checked).map((b) => b.value) });
+      toast("Shranjeno – upošteva se pri naslednji pripravi vaj.");
+    } catch (err) {
+      toast(err.message);
+    }
+  };
+  return h("form", { class: "card", onsubmit: save },
+    h("h2", {}, "Zanimanja in teme"),
+    h("p", { class: "small" }, "Claude to upošteva pri pisanju vaj (lahko po angleško ali slovensko):"),
+    area,
+    h("p", { class: "small", style: "margin-top:12px" }, "Najljubše teme (vsaka druga vaja):"),
+    h("div", { style: "display:flex;flex-wrap:wrap;gap:6px 18px" }, d.topics.map((t, i) => h("label", { style: "font-size:15px" }, boxes[i], ` ${t.label_sl}`))),
+    h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")));
 }
 
 function settingsCard(settings) {
@@ -121,7 +182,7 @@ function settingsCard(settings) {
   return h("form", { class: "card", onsubmit: save },
     h("h2", {}, "Dolžina vaj"),
     fields.map(([k, label]) => h("div", { class: "form-row" }, h("label", {}, label), inputs[k])),
-    h("p", { class: "small" }, `Lestvica: ${settings.ladder.join(" → ")} min. Za eno stopničko višje po 7 vajah v 8 dneh (pri redni vadbi ~3 mesece do vrha), za eno nižje po 3+ dneh odsotnosti.`),
+    h("p", { class: "small" }, `Lestvica: ${settings.ladder.join(" → ")} min. Za eno stopničko višje po 7 vajah v 8 dneh (pri redni vadbi ~1 mesec do 30 min, ~2 meseca do 45 min), za eno nižje po 3+ dneh odsotnosti.`),
     h("div", { class: "actions" }, h("button", { class: "btn", type: "submit" }, "Shrani")));
 }
 
@@ -206,6 +267,8 @@ async function load() {
           d.levelHistory.slice().reverse().slice(0, 20).map((x) => [fmt(x.created_at), SKILL_SL[x.skill], `${x.from_level === null ? "–" : LEVELS[x.from_level]} → ${LEVELS[x.to_level]}`, REASON_SL[x.reason] ?? x.reason]))),
       h("div", {}, claudeCard(d.claude), settingsCard(d.settings))),
     rewardsCard(d),
+    interestsCard(d),
+    imagesCard(d.images),
     actionsCard(d),
     h("div", { class: "card" }, h("h2", {}, "Uspešnost po vajah"), accuracyChart(d.sessions)),
     h("div", { class: "card" },

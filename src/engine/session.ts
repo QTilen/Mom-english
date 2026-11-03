@@ -165,8 +165,34 @@ function addRecapQuestions(sessionId: number, today: string): void {
   picks.forEach((id, k) => insertItem(sessionId, k, "recap", "review", id));
 }
 
+// A lesson from one of the uploaded screenshots (her favourite shops, travel
+// sites): the newest one she hasn't done, else one not seen for a while.
+// Longer sessions also get its word exercises.
+function addPictureLesson(sessionId: number, minutes: number): void {
+  const row = db
+    .prepare(
+      `SELECT i.exercise_ids_json FROM images i
+       WHERE i.status = 'ready' AND i.exercise_ids_json IS NOT NULL
+       ORDER BY
+         (SELECT COUNT(*) FROM attempts a WHERE a.exercise_id = json_extract(i.exercise_ids_json, '$[0]')),
+         (SELECT MAX(created_at) FROM attempts a WHERE a.exercise_id = json_extract(i.exercise_ids_json, '$[0]')),
+         i.id DESC
+       LIMIT 1`,
+    )
+    .get() as { exercise_ids_json: string } | undefined;
+  if (!row) return;
+  const [pictureId, ...practice] = JSON.parse(row.exercise_ids_json) as number[];
+  const recent = db
+    .prepare("SELECT 1 FROM attempts WHERE exercise_id = ? AND created_at >= ?")
+    .get(pictureId, new Date(Date.now() - 10 * 86_400_000).toISOString());
+  if (recent) return;
+  insertItem(sessionId, 90, "main", "new", pictureId);
+  if (minutes >= 9) practice.slice(0, minutes >= 20 ? 3 : 1).forEach((id, k) => insertItem(sessionId, 91 + k, "main", "new", id));
+}
+
 function startSession(sessionId: number, today: string): TargetChange | undefined {
   const dropBack = maybeDropBack(today);
+  addPictureLesson(sessionId, targetMinutes());
   fitToTarget(sessionId, targetMinutes(), today);
   addRecapQuestions(sessionId, today);
   db.prepare("UPDATE sessions SET status = 'in_progress', started_at = ? WHERE id = ?").run(nowIso(), sessionId);
@@ -457,7 +483,7 @@ export function completeSession(sessionId: number): SessionSummary {
       if (seen.has(c) || learned.length >= 4) continue;
       seen.add(c);
       // A reading answer ("question → answer") makes a poor example on its own.
-      const example = ex.type === "reading" ? "" : (fb.correctDisplay[0] ?? "");
+      const example = ex.type === "reading" || ex.type === "picture" ? "" : (fb.correctDisplay[0] ?? "");
       learned.push({ category: c, label_sl: CATEGORY_LABELS_SL[c as Category] ?? c, example_en: example });
     }
   }

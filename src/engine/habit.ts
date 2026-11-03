@@ -11,9 +11,9 @@ const STEP_UP_WINDOW_DAYS = 8;
 const DROP_BACK_AFTER_DAYS_AWAY = 3;
 export const DEFAULT_CAP_MINUTES = 45;
 
-// Twelve weekly rungs from 5 to 45 minutes: about three months with steady
-// practice. Small steps while the habit is fragile, bigger ones once it holds.
-const BASE_LADDER = [5, 7, 9, 12, 15, 18, 22, 26, 30, 34, 38, 42, 45];
+// Eight weekly rungs: 30 minutes after about a month of steady practice and
+// 45 after about two. Steps grow as the habit takes hold, then level off.
+const BASE_LADDER = [5, 9, 14, 21, 30, 34, 38, 42, 45];
 
 export function ladder(cap: number): number[] {
   const rungs = BASE_LADDER.filter((m) => m <= cap);

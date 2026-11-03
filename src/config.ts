@@ -13,6 +13,7 @@ export const config = {
   claudeModel: process.env.CLAUDE_MODEL || "sonnet",
   timezone: process.env.TZ || "Europe/Ljubljana",
   dbPath: process.env.DB_PATH || path.join(ROOT_DIR, "data", "english.db"),
+  imagesDir: process.env.IMAGES_DIR || path.join(ROOT_DIR, "data", "images"),
   // Jobs are polled rather than pushed; a few seconds is plenty for background work.
   jobPollMs: Number(process.env.JOB_POLL_MS || 5000),
 };

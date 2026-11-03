@@ -3,9 +3,10 @@ import { db, nowIso } from "../db";
 import { LEVELS, levelLabel, parseLevelLabel, SKILLS, type Skill } from "../levels";
 import { callClaudeJson } from "../claude/run";
 import { GENERATOR_SYSTEM, GRADER_SYSTEM, withName } from "../claude/prompts";
-import { learnerName } from "../content/encouragement";
+import { learnerInterests, learnerName } from "../content/encouragement";
 import { CategorySchema, CATEGORY_LABELS_SL, ExerciseSchema, exerciseProblems, TOPICS, type Exercise } from "../content/schema";
 import { getExercise, saveExercise } from "../content/store";
+import { getImage, imagePath } from "../content/images";
 import { addDays, localDate } from "../util/dates";
 import { adaptLevels } from "../engine/adapt";
 import { targetMinutes } from "../engine/habit";
@@ -117,7 +118,7 @@ Return JSON with "recap" and "items" (exactly ${slots.length} exercises).`;
   const schema = z.object({ recap: RecapSchema, items: z.array(ExerciseSchema) });
   return callClaudeJson({
     purpose,
-    system: withName(GENERATOR_SYSTEM, learnerName()),
+    system: withName(GENERATOR_SYSTEM, learnerName(), learnerInterests()),
     prompt,
     schema,
     check: (out) => slotProblems(out.items, slots),
@@ -173,6 +174,60 @@ export async function refillBank(level: number): Promise<number> {
   const out = await generateItems(slots, "refill_bank", false);
   out.items.forEach((item, i) => saveExercise(item, slots[i].skill, slots[i].level, "claude"));
   return out.items.length;
+}
+
+// --- Picture lessons ---------------------------------------------------------------
+
+const PictureLessonSchema = z.object({
+  topic: z.enum(TOPICS),
+  title: text(80),
+  questions: z.array(z.object({ question: text(200), options: z.array(text(160)).min(2).max(4), answer: z.number().int().min(0).max(3) })).min(2).max(4),
+  categories: z.array(CategorySchema).min(1).max(3),
+  explanation_sl: text(350),
+  words: z.array(z.object({ en: text(40), sl: text(40) })).min(3).max(8),
+  practice: z.array(ExerciseSchema).max(3),
+});
+
+// Turns an uploaded screenshot into a picture exercise (questions about what
+// is on it) plus a few word exercises using its vocabulary.
+async function pictureLesson(payload: { imageId: number }): Promise<void> {
+  const image = getImage(payload.imageId);
+  if (!image || image.status !== "pending") return;
+  const level = getLevels().vocabulary;
+  const out = await callClaudeJson({
+    purpose: "picture_lesson",
+    system: withName(GENERATOR_SYSTEM, learnerName(), learnerInterests()),
+    prompt: `First use the Read tool to look at the image file "${image.filename}" in the current folder. It is a screenshot${image.source ? ` from ${image.source}` : ""} (an online shop, a travel site or similar), saved for her English practice.
+
+Make a short lesson from it for her vocabulary level (${levelLabel(level)}):
+- "title": a short English title for the picture (e.g. "A summer dress on Zalando").
+- "questions": 2–4 multiple-choice questions in simple English about what is really visible in the screenshot (price, sizes, colours, materials, delivery or returns information, what a button means, dates or times). Each answer must be clearly answerable from the picture. 3 options each.
+- "words": 3–8 useful English words or short phrases that appear in the screenshot, with Slovenian translations.
+- "categories", "explanation_sl" (one or two Slovenian sentences that explain the key words), "topic" (fashion for clothes shops, travel for travel sites).
+- "practice": 2–3 extra exercises (types mc, match or fill only) that practise the words from the screenshot in new everyday sentences, at her level, following the usual rules.
+Use only what you can read in the screenshot; never guess details you can't see.`,
+    schema: PictureLessonSchema,
+    check: (o) => [
+      ...o.practice.filter((p) => !["mc", "match", "fill"].includes(p.type)).map(() => "practice items must be mc, match or fill"),
+      ...o.practice.flatMap((p, i) => exerciseProblems(p, `practice[${i}]`)),
+      ...o.questions.flatMap((q, i) => (q.answer >= q.options.length ? [`questions[${i}].answer out of range`] : [])),
+    ],
+    files: [imagePath(image.filename)],
+    timeoutMs: 300_000,
+  });
+  const picture: Exercise = {
+    type: "picture",
+    image: image.filename,
+    title: out.title,
+    topic: out.topic,
+    categories: out.categories,
+    explanation_sl: out.explanation_sl,
+    words: out.words.slice(0, 6),
+    questions: out.questions,
+  };
+  const ids = [saveExercise(picture, "vocabulary", level, "claude")];
+  for (const p of out.practice) ids.push(saveExercise(p, p.type === "fill" ? "grammar" : "vocabulary", level, "claude"));
+  db.prepare("UPDATE images SET status = 'ready', exercise_ids_json = ? WHERE id = ?").run(JSON.stringify(ids), image.id);
 }
 
 // --- Grading ----------------------------------------------------------------------
@@ -236,7 +291,7 @@ async function gradeWriting(payload: { reviewId: number }): Promise<void> {
   const task = prompt.type === "write" ? prompt.prompt_sl : "";
   const out = await callClaudeJson({
     purpose: review.placement_attempt_id ? "grade_placement_writing" : "grade_writing",
-    system: withName(GRADER_SYSTEM, learnerName()),
+    system: withName(GRADER_SYSTEM, learnerName(), learnerInterests()),
     prompt: `The task (in Slovenian) was: "${task}"
 Expected level of the task: ${levelLabel(review.level)}.
 
@@ -271,7 +326,7 @@ async function gradeTranslation(payload: { reviewId: number }): Promise<void> {
   if (ex.type !== "translate") return;
   const out = await callClaudeJson({
     purpose: "grade_translation",
-    system: withName(GRADER_SYSTEM, learnerName()),
+    system: withName(GRADER_SYSTEM, learnerName(), learnerInterests()),
     prompt: `She was asked to translate this Slovenian sentence into English (level ${levelLabel(review.level)}):
 "${ex.sl}"
 
@@ -301,6 +356,9 @@ export function registerJobs(): void {
   registerJob("refill_bank", async (p: { level: number }) => {
     await refillBank(p.level);
   });
+  registerJob("picture_lesson", pictureLesson, (p: { imageId: number }) =>
+    db.prepare("UPDATE images SET status = 'failed' WHERE id = ?").run(p.imageId),
+  );
   registerJob("grade_writing", gradeWriting, markReviewFailed);
   registerJob("grade_translation", gradeTranslation, markReviewFailed);
 }

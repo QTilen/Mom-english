@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Router, type NextFunction, type Request, type Response } from "express";
+import express, { Router, type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import { config } from "../config";
 import { db, nowIso, setSetting } from "../db";
@@ -12,8 +12,10 @@ import { getLevels } from "../engine/levels";
 import { bestStreak, currentStreak, freezesLeft, habitSettings, setTargetManually, targetMinutes } from "../engine/habit";
 import { wordsLearnedCount } from "../engine/memory";
 import { resetPlacement } from "../engine/placement";
-import { rewardProgress, rewardSettings, rewardsList, totalStars } from "../engine/rewards";
-import { learnerName } from "../content/encouragement";
+import { REWARD_MILESTONES, rewardPlan, rewardProgress, rewardsList, setRewardText, totalStars } from "../engine/rewards";
+import { favoriteTopics, learnerInterests, learnerName } from "../content/encouragement";
+import { TOPICS, TOPIC_LABELS_SL } from "../content/schema";
+import { addImage, deleteImage, extensionFor, listImages } from "../content/images";
 
 export const adminRouter = Router();
 
@@ -117,7 +119,11 @@ adminRouter.get("/overview", async (_req, res) => {
     bestStreak: bestStreak(),
     freezesLeft: freezesLeft(today),
     wordsLearned: wordsLearnedCount(),
-    settings: { targetMinutes: targetMinutes(), ...habitSettings(), ...rewardSettings(), learnerName: learnerName() },
+    settings: { targetMinutes: targetMinutes(), ...habitSettings(), learnerName: learnerName() },
+    rewardPlan: rewardPlan(),
+    interests: learnerInterests(),
+    images: listImages(),
+    topics: TOPICS.map((t) => ({ id: t, label_sl: TOPIC_LABELS_SL[t], favorite: favoriteTopics().includes(t) })),
     stars: totalStars(),
     reward: rewardProgress(currentStreak(today)),
     rewards: rewardsList(),
@@ -138,19 +144,40 @@ adminRouter.post("/settings", (req, res) => {
       targetMinutes: z.number().int().min(5).max(90).optional(),
       capMinutes: z.number().int().min(5).max(90).optional(),
       freezesPerWeek: z.number().int().min(0).max(7).optional(),
-      rewardEveryDays: z.number().int().min(3).max(100).optional(),
-      rewardText: z.string().trim().min(1).max(200).optional(),
+      rewardTexts: z.record(z.string(), z.string().trim().min(1).max(200)).optional(),
+      interests: z.string().trim().min(1).max(1500).optional(),
+      favoriteTopics: z.array(z.enum(TOPICS)).max(6).optional(),
       learnerName: z.string().trim().min(1).max(40).optional(),
     })
     .parse(req.body);
-  if (body.rewardEveryDays !== undefined) setSetting("reward_every_days", body.rewardEveryDays);
-  if (body.rewardText !== undefined) setSetting("reward_text", body.rewardText);
+  if (body.interests !== undefined) setSetting("interests", body.interests);
+  if (body.favoriteTopics !== undefined) setSetting("favorite_topics", JSON.stringify(body.favoriteTopics));
+  for (const [days, text] of Object.entries(body.rewardTexts ?? {})) {
+    if (REWARD_MILESTONES.includes(Number(days))) setRewardText(Number(days), text);
+  }
   if (body.learnerName !== undefined) setSetting("learner_name", body.learnerName);
   if (body.capMinutes !== undefined) setSetting("cap_minutes", body.capMinutes);
   if (body.freezesPerWeek !== undefined) setSetting("freezes_per_week", body.freezesPerWeek);
   if (body.targetMinutes !== undefined) setTargetManually(body.targetMinutes, localDate());
   else if (body.capMinutes !== undefined && targetMinutes() > body.capMinutes) setTargetManually(body.capMinutes, localDate());
-  res.json({ ok: true, settings: { targetMinutes: targetMinutes(), ...habitSettings(), ...rewardSettings(), learnerName: learnerName() } });
+  res.json({ ok: true, settings: { targetMinutes: targetMinutes(), ...habitSettings(), learnerName: learnerName() } });
+});
+
+// Screenshot upload: the raw image is the request body, ?source=Zalando.
+adminRouter.post("/images", express.raw({ type: "image/*", limit: "15mb" }), (req, res) => {
+  const ext = extensionFor(req.headers["content-type"] ?? "");
+  if (!ext || !Buffer.isBuffer(req.body) || req.body.length === 0) return res.status(400).json({ error: "Pošlji sliko (PNG, JPG ali WebP)." });
+  const source = typeof req.query.source === "string" ? req.query.source.slice(0, 60) : null;
+  res.json({ id: addImage(req.body, ext, source) });
+});
+
+adminRouter.get("/images", (_req, res) => {
+  res.json(listImages());
+});
+
+adminRouter.post("/images/:id/delete", (req, res) => {
+  deleteImage(Number(req.params.id));
+  res.json({ ok: true });
 });
 
 // Tick off a reward once the family has actually given it.

@@ -165,7 +165,8 @@ export function grade(ex: Exercise, answer: Answer, skill: string): GradeResult 
       const display = ex.pairs.map((p) => `${p.sl} = ${p.en}`);
       return hits === ex.pairs.length ? right(display) : wrong(display, hits / ex.pairs.length);
     }
-    case "reading": {
+    case "reading":
+    case "picture": {
       const given = "options" in answer ? answer.options : [];
       const hits = ex.questions.filter((q, i) => given[i] === q.options[q.answer]).length;
       const display = ex.questions.map((q) => `${q.question} → ${q.options[q.answer]}`);

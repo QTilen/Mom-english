@@ -4,6 +4,7 @@ import { CATEGORIES, TOPICS, type Category, type ExerciseType, type Topic } from
 import { queryExercises, type ExerciseRow } from "../content/store";
 import { addDays } from "../util/dates";
 import { dueCards } from "./memory";
+import { favoriteTopics } from "../content/encouragement";
 import type { Levels } from "./levels";
 
 // Decides what a session contains (how many items, which skills, types,
@@ -36,6 +37,7 @@ const DEFAULT_SECONDS: Record<ExerciseType, number> = {
   translate: 60,
   reading: 120,
   write: 180,
+  picture: 90,
 };
 
 const TYPES_BY_SKILL: Record<Skill, ExerciseType[]> = {
@@ -106,7 +108,16 @@ function recentTopics(): Topic[] {
 function topicRotation(): Topic[] {
   const recent = recentTopics();
   const uses = (t: Topic) => recent.filter((r) => r === t).length;
-  return [...TOPICS].sort((a, b) => uses(a) - uses(b) || Math.random() - 0.5);
+  const all = [...TOPICS].sort((a, b) => uses(a) - uses(b) || Math.random() - 0.5);
+  // Her favourite themes (fashion shopping, the Japan trip) fill every other
+  // slot; the rest rotate through everyday topics so nothing is neglected.
+  const favorites = favoriteTopics().filter((t): t is Topic => (TOPICS as readonly string[]).includes(t));
+  if (!favorites.length) return all;
+  const favs = favorites.sort((a, b) => uses(a) - uses(b));
+  const others = all.filter((t) => !favs.includes(t));
+  const mixed: Topic[] = [];
+  for (let i = 0; i < TOPICS.length; i++) mixed.push(i % 2 === 0 ? favs[(i / 2) % favs.length] : others[((i - 1) / 2) % others.length]);
+  return mixed;
 }
 
 function categorySkill(cat: Category): Skill[] {

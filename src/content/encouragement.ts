@@ -42,6 +42,21 @@ export function quoteForDay(date: string): { en: string; sl: string } {
   return QUOTES[n % QUOTES.length];
 }
 
+// What she enjoys, so lessons feel like her own life. Editable in admin.
+export const DEFAULT_INTERESTS =
+  "She loves online shopping for clothes on sites like Zalando, About You and BestSecret (product pages, sizes, colours, materials, prices, discounts, delivery, returns, checkout). " +
+  "She is planning a trip to Japan (flights, airports, hotels and ryokans, trains and the Shinkansen, Tokyo, Kyoto and Osaka, Japanese food and restaurants, money and yen, sightseeing, polite phrases, weather and packing).";
+
+export function learnerInterests(): string {
+  return getSetting("interests") ?? DEFAULT_INTERESTS;
+}
+
+export const DEFAULT_FAVORITE_TOPICS = ["fashion", "travel"];
+
+export function favoriteTopics(): string[] {
+  return JSON.parse(getSetting("favorite_topics") ?? JSON.stringify(DEFAULT_FAVORITE_TOPICS));
+}
+
 export function learnerName(): string {
   return getSetting("learner_name") ?? "Franja";
 }

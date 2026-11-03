@@ -22,6 +22,7 @@ app.use(express.json({ limit: "200kb" }));
 app.use("/api/admin", adminRouter);
 app.use("/api", learnerRouter);
 app.use(express.static(path.join(ROOT_DIR, "public")));
+app.use("/images", express.static(config.imagesDir, { maxAge: "7d" }));
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof ZodError) return res.status(400).json({ error: "invalid request" });

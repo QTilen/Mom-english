@@ -1,9 +1,8 @@
-import { db, getNumberSetting, getSetting, setSetting } from "../db";
+import { db, getSetting, setSetting } from "../db";
 
 // Things to collect: 🔥 one per practice day, ⭐ 1–3 per session, badges for
-// milestones, and a real reward (set by the family in admin) every N-day streak.
+// milestones, and real rewards (set by the family in admin) at streak milestones.
 
-export const DEFAULT_REWARD_EVERY = 14;
 export const DEFAULT_REWARD_TEXT = "Presenečenje od družine 🎁";
 
 export function starsFor(correct: number, total: number): number {
@@ -88,25 +87,63 @@ export function practiceDays(): number {
   return (db.prepare("SELECT COUNT(*) AS n FROM days WHERE status = 'completed'").get() as { n: number }).n;
 }
 
-export function rewardSettings() {
-  return {
-    rewardEveryDays: getNumberSetting("reward_every_days", DEFAULT_REWARD_EVERY),
-    rewardText: getSetting("reward_text") ?? DEFAULT_REWARD_TEXT,
-  };
+// Streak milestones that unlock a family reward, each once: two weeks, then
+// one, two, six and twelve months, then every further year.
+export const REWARD_MILESTONES = [14, 30, 60, 180, 365];
+
+const MILESTONE_LABELS_SL: Record<number, string> = {
+  14: "2 tedna",
+  30: "1 mesec",
+  60: "2 meseca",
+  180: "6 mesecev",
+  365: "1 leto",
+};
+
+function milestoneLabel(days: number): string {
+  return MILESTONE_LABELS_SL[days] ?? `${Math.round(days / 365)} let`;
 }
 
+function isMilestone(days: number): boolean {
+  return REWARD_MILESTONES.includes(days) || (days > 365 && days % 365 === 0);
+}
+
+// The reward text for each milestone, set by the family in admin.
+export function rewardPlan(): { days: number; label_sl: string; text: string }[] {
+  const texts = JSON.parse(getSetting("reward_plan") ?? "{}") as Record<string, string>;
+  return REWARD_MILESTONES.map((days) => ({ days, label_sl: milestoneLabel(days), text: texts[days] || DEFAULT_REWARD_TEXT }));
+}
+
+export function setRewardText(days: number, text: string): void {
+  const texts = JSON.parse(getSetting("reward_plan") ?? "{}") as Record<string, string>;
+  texts[days] = text;
+  setSetting("reward_plan", JSON.stringify(texts));
+}
+
+function rewardTextFor(days: number): string {
+  return rewardPlan().find((p) => p.days === days)?.text ?? rewardPlan().at(-1)!.text;
+}
+
+function unlockedMilestones(): Set<number> {
+  return new Set((db.prepare("SELECT streak FROM rewards").all() as { streak: number }[]).map((r) => r.streak));
+}
+
+// The next milestone she hasn't unlocked yet, and how far along the streak is.
 export function rewardProgress(streak: number) {
-  const every = rewardSettings().rewardEveryDays;
-  const into = streak > 0 && streak % every === 0 ? every : streak % every;
-  return { every, current: into, daysLeft: every - into };
+  const done = unlockedMilestones();
+  let target = REWARD_MILESTONES.find((m) => !done.has(m));
+  if (target === undefined) {
+    target = 730;
+    while (done.has(target)) target += 365;
+  }
+  const current = Math.min(streak, target);
+  return { every: target, label_sl: milestoneLabel(target), current, daysLeft: target - current };
 }
 
-// Called once a day when she completes practice: hitting a multiple of the
-// reward interval unlocks the reward the family has set.
+// Called once a day when she completes practice. Each milestone pays out once,
+// so after a broken streak she works towards the next reward, not the same one.
 export function maybeUnlockReward(today: string, streak: number) {
-  const { rewardEveryDays, rewardText } = rewardSettings();
-  if (streak === 0 || streak % rewardEveryDays !== 0) return undefined;
-  db.prepare("INSERT OR IGNORE INTO rewards (unlocked_on, streak, reward_text) VALUES (?, ?, ?)").run(today, streak, rewardText);
+  if (!isMilestone(streak) || unlockedMilestones().has(streak)) return undefined;
+  db.prepare("INSERT OR IGNORE INTO rewards (unlocked_on, streak, reward_text) VALUES (?, ?, ?)").run(today, streak, rewardTextFor(streak));
   return db.prepare("SELECT id, unlocked_on, streak, reward_text, given_at FROM rewards WHERE unlocked_on = ?").get(today) as {
     id: number;
     unlocked_on: string;

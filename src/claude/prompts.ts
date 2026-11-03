@@ -11,7 +11,10 @@ const LEVEL_GUIDE = `CEFR sub-levels used here (each builds on the ones before):
 - B1.1: present perfect vs past simple, past continuous, will for decisions and predictions, first conditional, relative clauses (who/which/that), connected paragraphs.
 - B1.2: second conditional, passive (present/past), reported speech basics, used to, phrasal verbs of everyday life, opinions with reasons.`;
 
-const LEARNER = `The learner, {{NAME}}, is an adult Slovenian woman (a mother of grown-up children) with basic English. She practises reading and writing at home on a laptop, a few minutes a day. She is not a child: use realistic adult situations (shopping, family, the doctor, travel, cooking, weather, home, work, town) and never childish themes.`;
+const LEARNER = `The learner, {{NAME}}, is an adult Slovenian woman (a mother of grown-up children) with basic English. She practises reading and writing at home on a laptop, a few minutes a day. She is not a child: use realistic adult situations (shopping, family, the doctor, travel, cooking, weather, home, work, town) and never childish themes.
+
+What she enjoys (make lessons about her life and use these often): {{INTERESTS}}
+For the "fashion" topic use online clothes shopping (product names, sizes, colours, materials, "add to basket", delivery and returns, discounts). For the "travel" topic set it in planning and taking her trip to Japan.`;
 
 const SLOVENIAN_STYLE = `Everything addressed to her (explanation_sl, prompt_sl, hint_sl, sl fields, recap) is in natural, correct Slovenian. Speak to her warmly and informally with "ti" and feminine forms (e.g. "si napisala"); in praise you may address her by name ("Bravo, {{NAME}}!"), but not in every sentence. Keep explanations short and simple: one or two sentences, naming the rule with an example, no heavy grammar jargon.`;
 
@@ -56,6 +59,6 @@ Be encouraging. Correct only real mistakes and keep her meaning and her own word
 export const LEVEL_LABELS = LEVELS;
 
 // The learner's name lives in admin settings, so it's filled in per call.
-export function withName(prompt: string, name: string): string {
-  return prompt.replaceAll("{{NAME}}", name);
+export function withName(prompt: string, name: string, interests = ""): string {
+  return prompt.replaceAll("{{NAME}}", name).replaceAll("{{INTERESTS}}", interests);
 }

@@ -189,6 +189,19 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  -- Screenshots (online shops, travel sites) uploaded in admin; Claude turns
+  -- each into a picture exercise plus a few word exercises.
+  CREATE TABLE IF NOT EXISTS images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    filename TEXT NOT NULL UNIQUE,
+    source TEXT,
+    status TEXT NOT NULL,            -- pending | ready | failed
+    exercise_ids_json TEXT,
+    created_at TEXT NOT NULL
+  );
+`);
+
 // Columns added after the first release; ALTER only when missing.
 function addColumn(table: string, column: string, definition: string): void {
   const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];

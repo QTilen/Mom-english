@@ -6,7 +6,18 @@ process.stdin.on("data", (d) => (input += d));
 process.stdin.on("end", () => {
   if (process.argv.includes("--version")) return console.log("9.9.9 (fake)");
   let reply;
-  if (input.includes("Write exercises for these slots")) {
+  if (input.includes("use the Read tool to look at the image")) {
+    const sawFile = require("fs").readdirSync(process.cwd()).some((f) => f.endsWith(".png"));
+    reply = {
+      topic: "fashion",
+      title: sawFile ? "A dress on Zalando" : "NO FILE",
+      questions: [{ question: "How much is the dress?", options: ["€49.95", "€19.95", "€99"], answer: 0 }, { question: "Which colour is it?", options: ["blue", "red", "green"], answer: 0 }],
+      categories: ["vocab:fashion"],
+      explanation_sl: "Dress = obleka.",
+      words: [{ en: "dress", sl: "obleka" }, { en: "size", sl: "velikost" }, { en: "free delivery", sl: "brezplačna dostava" }],
+      practice: [item("mc", "fashion", 90), item("match", "fashion", 91)],
+    };
+  } else if (input.includes("Write exercises for these slots")) {
     const slots = [...input.matchAll(/^\d+\. type: (\w+), skill: (\w+), level: [^,]+, topic: (\w+)/gm)];
     reply = { recap: input.includes("Her last session") ? [{ sl: "Člen »a« pred soglasnikom", en: "a nurse" }] : [], items: slots.map(([, type, , topic], i) => item(type, topic, i)) };
   } else if (input.includes("Her text:")) {

@@ -15,7 +15,7 @@ A calm, adaptive web app that helps a Slovenian speaker practise English **readi
 - **Mistake log and spaced repetition.** Mistakes are logged by category (articles, word order, past simple, specific words…). Weak points come back at 1, 2, 4, 7, 14 and 30 days.
 - **Habit building (Atomic Habits).** The placement test is the only long day. Daily practice then starts at **5 minutes** so showing up is easy.
   - Length is set by the number of exercises, calibrated to her own speed; there is no visible timer.
-  - It climbs a ladder of small weekly steps (5 → 7 → 9 → 12 → 15 → 18 → 22 → 26 → 30 → 34 → 38 → 42 → 45 minutes), one step after each week with 7 sessions in 8 days. With steady practice that reaches **45 minutes after about 3 months**. The cap is adjustable in admin.
+  - It climbs a ladder of weekly steps (5 → 9 → 14 → 21 → 30 → 34 → 38 → 42 → 45 minutes), one step after each week with 7 sessions in 8 days. With steady practice that reaches **30 minutes after about a month and 45 minutes after about two**. The cap is adjustable in admin.
   - After 3 or more days away, she goes back one step.
   - 2 streak freezes per week cover missed days.
   - Long sessions are generated in chunks of 12 exercises and include one free-writing task per started quarter hour.
