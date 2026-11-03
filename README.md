@@ -9,7 +9,8 @@ A calm, adaptive web app that helps a Slovenian speaker practise English **readi
   1. *Včeraj smo se naučili:* a recap of last time, Claude's feedback on her writing, and 1–2 quick review questions.
   2. Today's exercises.
   3. A celebration screen with her 🔥 streak and what she learned.
-- **Exercise types:** multiple choice, fill-in-the-blank, word ordering, matching, short reading with questions, Slovenian→English translation, and free writing. Topics are adult and everyday (shopping, family, doctor, travel, cooking, weather…).
+- **Exercise types:** multiple choice, fill-in-the-blank, word ordering, matching, short reading with questions, Slovenian→English translation, free writing, and **picture lessons**. Topics are adult and everyday, and every other exercise uses one of her favourite themes: **online fashion shopping** and **planning her trip to Japan**. Both the themes and the free-text description of her interests that Claude sees are editable in admin.
+- **Picture lessons from real websites.** Upload screenshots of English shop or travel pages (Zalando, About You, BestSecret, Japan travel sites) on the admin page under **Slike za vaje**. Claude looks at each one and makes a lesson: questions about what's on the page (price, sizes, colours, delivery and returns, buttons), plus 2–3 exercises practising its words. Each session includes one picture lesson she hasn't done yet; longer sessions also include its word exercises. Screenshots stay on the Pi in `data/images` and are never committed. From a shell you can also run `npm run images:add -- Zalando shot1.png shot2.png`.
 - **Instant, gentle feedback.** Every exercise already contains its answer and a short Slovenian explanation, so she never waits for Claude. Free writing, and translations that don't match a known answer, are graded by Claude in the background. She sees that feedback at the start of her next session.
 - **Adaptive levels.** A skill moves up after more than 85% over her last 3 sessions with that skill, and down after less than 50% over the last 2. Each session is weighted towards her weakest skills and recent mistakes. Between level changes, each exercise slot also gets a difficulty hint ("upper end" or "lower end" of the level) from her last 15 answers in that skill. Claude also sees her recent accuracy and her latest free writing, so new exercises stay in her sweet spot.
 - **Mistake log and spaced repetition.** Mistakes are logged by category (articles, word order, past simple, specific words…). Weak points come back at 1, 2, 4, 7, 14 and 30 days.
@@ -24,7 +25,7 @@ A calm, adaptive web app that helps a Slovenian speaker practise English **readi
   - 🔥 one fire per practice day
   - ⭐ 1–3 stars per session: 1 for finishing, 2 for 70% or more, 3 for 90% or more
   - badges for streak milestones (3, 7, 14, 30, 60, 100 days), words learned and stars collected
-  - 🎁 a **real family reward every 14 days in a row**. You set the reward text in admin. When she unlocks it she gets a big celebration screen ("Pokaži ta zaslon družini"), and you tick it off in admin once it's been given.
+  - 🎁 **real family rewards** at streak milestones: **2 weeks, then 1 month, 2 months, 6 months and 1 year**, and every year after that. Each milestone pays out once, and you set the text for each in admin. When she unlocks one she gets a big celebration screen ("Show this screen to your family"), and you tick it off in admin once it's been given.
 - **Progress page** for her (levels, collection, reward countdown), and a **PIN-protected admin page** (`/admin.html`) for you. Admin shows:
   - levels and level history, an accuracy chart, and session history
   - the mistake log and her writing reviews
