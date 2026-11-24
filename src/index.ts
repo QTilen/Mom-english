@@ -34,6 +34,31 @@ registerJobs();
 startWorker(config.jobPollMs);
 startScheduler();
 
-app.listen(config.port, config.host, () => {
+app.get("/healthz", (_req, res) => {
+  res.json({ ok: true });
+});
+
+const server = app.listen(config.port, config.host, () => {
   console.log(`Mom English running at http://${config.host}:${config.port}`);
 });
+
+// On the Pi the listening socket once vanished while the process kept
+// running (after a network change), leaving the app silently unreachable.
+// Probe our own address every minute; after 3 failures exit so systemd
+// restarts us with a fresh socket.
+const SELF_CHECK_MS = 60_000;
+const MAX_FAILED_CHECKS = 3;
+let failedChecks = 0;
+setInterval(async () => {
+  const host = config.host === "0.0.0.0" ? "127.0.0.1" : config.host;
+  try {
+    const res = await fetch(`http://${host}:${config.port}/healthz`, { signal: AbortSignal.timeout(5000) });
+    failedChecks = res.ok && server.listening ? 0 : failedChecks + 1;
+  } catch {
+    failedChecks++;
+  }
+  if (failedChecks >= MAX_FAILED_CHECKS) {
+    console.error(`Self-check failed ${failedChecks} times in a row; exiting so systemd restarts the app.`);
+    process.exit(1);
+  }
+}, SELF_CHECK_MS).unref();
